@@ -1,0 +1,202 @@
+[
+  {
+    "id": 1781131500951,
+    "subject": "Software Engineering",
+    "title": "Final research paper",
+    "description": "Final research paper",
+    "finalDeadline": "2026-12-31T16:59:00.000Z",
+    "difficulty": "medium",
+    "totalPoints": 1470,
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Problem Analysis",
+        "description": "Understand requirements and constraints",
+        "deadline": "2026-07-29T13:02:44.343Z",
+        "pointsDeposited": 120,
+        "status": "active",
+        "progress": 0
+      },
+      {
+        "id": 2,
+        "title": "Design Architecture",
+        "description": "Plan data structures and algorithms",
+        "deadline": "2026-09-03T13:23:18.514Z",
+        "pointsDeposited": 170,
+        "status": "upcoming",
+        "progress": 0
+      },
+      {
+        "id": 3,
+        "title": "Core Implementation",
+        "description": "Write main functionality",
+        "deadline": "2026-10-05T23:27:05.778Z",
+        "pointsDeposited": 220,
+        "status": "locked",
+        "progress": 0
+      },
+      {
+        "id": 4,
+        "title": "Feature Development",
+        "description": "Add required features",
+        "deadline": "2026-11-05T06:17:48.274Z",
+        "pointsDeposited": 270,
+        "status": "locked",
+        "progress": 0
+      },
+      {
+        "id": 5,
+        "title": "Testing & Debugging",
+        "description": "Write tests and fix bugs",
+        "deadline": "2026-12-04T01:17:10.159Z",
+        "pointsDeposited": 320,
+        "status": "locked",
+        "progress": 0
+      },
+      {
+        "id": 6,
+        "title": "Documentation",
+        "description": "Add comments and README",
+        "deadline": "2026-12-31T16:59:00.000Z",
+        "pointsDeposited": 370,
+        "status": "locked",
+        "progress": 0
+      }
+    ],
+    "createdAt": "2026-06-10T22:45:00.951Z"
+  },
+  {
+    "id": 1781131671256,
+    "subject": "Kỹ thuật phần mềm",
+    "title": "Cuối kỳ",
+    "finalDeadline": "2026-06-10T22:46:00.000Z",
+    "difficulty": 3,
+    "depositPoints": 1470,
+    "totalPoints": 1470,
+    "lecturePdfPath": "",
+    "createdAt": "2026-06-10T22:47:51.255Z",
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Initial Research & Planning",
+        "description": "Gather sources and create outline",
+        "deadline": "2026-06-10T22:47:24.721Z",
+        "pointsDeposited": 120,
+        "status": "forfeited",
+        "progress": 0
+      },
+      {
+        "id": 2,
+        "title": "Draft First Section",
+        "description": "Complete introduction and context",
+        "deadline": "2026-06-10T22:47:05.057Z",
+        "pointsDeposited": 170,
+        "status": "forfeited",
+        "progress": 0
+      },
+      {
+        "id": 3,
+        "title": "Core Content Development",
+        "description": "Write main body and key arguments",
+        "deadline": "2026-06-10T22:46:47.355Z",
+        "pointsDeposited": 220,
+        "status": "forfeited",
+        "progress": 0
+      },
+      {
+        "id": 4,
+        "title": "Analysis & Evidence",
+        "description": "Add supporting data and citations",
+        "deadline": "2026-06-10T22:46:30.819Z",
+        "pointsDeposited": 270,
+        "status": "forfeited",
+        "progress": 0
+      },
+      {
+        "id": 5,
+        "title": "Draft Completion",
+        "description": "Finish all sections and connect ideas",
+        "deadline": "2026-06-10T22:46:15.099Z",
+        "pointsDeposited": 320,
+        "status": "forfeited",
+        "progress": 0
+      },
+      {
+        "id": 6,
+        "title": "Review & Refinement",
+        "description": "Edit for clarity and coherence",
+        "deadline": "2026-06-10T22:46:00.000Z",
+        "pointsDeposited": 370,
+        "status": "forfeited",
+        "progress": 0
+      }
+    ]
+  },
+  {
+    "id": 1781132841317,
+    "subject": "Giải tích 3",
+    "title": "Giải tích 3",
+    "finalDeadline": "2026-07-11T16:59:59.000Z",
+    "difficulty": 4,
+    "depositPoints": 1000,
+    "totalPoints": 1000,
+    "lecturePdfPath": "uploads/lectures/1781132841317.pdf",
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Initial Research & Planning",
+        "description": "Review core concepts for Giải tích 3",
+        "deadline": "2026-06-18T07:06:09.289Z",
+        "pointsDeposited": 26,
+        "status": "active",
+        "progress": 0
+      },
+      {
+        "id": 2,
+        "title": "Core Content Study",
+        "description": "Study main chapters and take notes",
+        "deadline": "2026-06-23T17:31:17.239Z",
+        "pointsDeposited": 71,
+        "status": "upcoming",
+        "progress": 0
+      },
+      {
+        "id": 3,
+        "title": "Practice & Application",
+        "description": "Apply concepts through exercises",
+        "deadline": "2026-06-28T14:55:18.365Z",
+        "pointsDeposited": 125,
+        "status": "locked",
+        "progress": 0
+      },
+      {
+        "id": 4,
+        "title": "Draft & Review",
+        "description": "Draft work and self-review",
+        "deadline": "2026-07-03T04:35:38.060Z",
+        "pointsDeposited": 187,
+        "status": "locked",
+        "progress": 0
+      },
+      {
+        "id": 5,
+        "title": "Deep Dive Analysis",
+        "description": "Analyze advanced topics in depth",
+        "deadline": "2026-07-07T12:51:21.052Z",
+        "pointsDeposited": 256,
+        "status": "locked",
+        "progress": 0
+      },
+      {
+        "id": 6,
+        "title": "Integration Phase",
+        "description": "Connect ideas across modules",
+        "deadline": "2026-07-11T16:59:59.000Z",
+        "pointsDeposited": 335,
+        "status": "locked",
+        "progress": 0
+      }
+    ],
+    "createdAt": "2026-06-10T23:07:21.782Z"
+  }
+]
