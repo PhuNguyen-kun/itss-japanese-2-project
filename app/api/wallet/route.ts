@@ -1,16 +1,7 @@
 import { NextResponse } from "next/server";
-import { getWallet, getWalletStats } from "@/lib/wallet";
-import { getAllAssignments, sumAtRiskPoints, sumDepositedPoints } from "@/lib/db";
-import { processOverdueTasks } from "@/lib/overdue";
+import { loadWalletStats } from "@/lib/walletStats";
 
 export async function GET() {
-  await processOverdueTasks();
-  const wallet = await getWallet();
-  const assignments = await getAllAssignments();
-  const stats = getWalletStats(wallet, sumAtRiskPoints(assignments));
-
-  return NextResponse.json({
-    ...stats,
-    deposited: sumDepositedPoints(assignments),
-  });
+  const stats = await loadWalletStats();
+  return NextResponse.json(stats);
 }

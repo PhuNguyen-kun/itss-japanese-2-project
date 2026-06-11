@@ -24,6 +24,7 @@ import {
   type TaskProgressClient,
 } from "@/lib/api-client";
 import { useLanguage } from "@/context/LanguageContext";
+import { useWallet } from "@/context/WalletContext";
 import { formatTimeRemaining } from "@/lib/timeFormat";
 import { TaskDescription } from "./TaskDescription";
 import { MathText } from "./MathText";
@@ -37,6 +38,7 @@ interface TaskCompleteProps {
 export function TaskComplete({ assignmentId, taskId }: TaskCompleteProps) {
   const router = useRouter();
   const { t } = useLanguage();
+  const { refreshWallet } = useWallet();
   const [assignment, setAssignment] = useState<Assignment | null>(null);
   const [task, setTask] = useState<Milestone | null>(null);
   const [progress, setProgress] = useState<TaskProgressClient | null>(null);
@@ -138,6 +140,7 @@ export function TaskComplete({ assignmentId, taskId }: TaskCompleteProps) {
     setSubmitting(true);
     try {
       await completeTaskRequest(aid, tid, answers);
+      await refreshWallet();
       setShowSuccess(true);
       setTimeout(() => router.push(`/roadmap/${assignment.id}`), 2000);
     } catch (err) {

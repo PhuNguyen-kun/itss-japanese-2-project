@@ -12,30 +12,24 @@ import {
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import {
-  getWalletStats,
   getBillingConfig,
   createSepayCheckout,
-  type WalletStats,
   type BillingConfig,
 } from "@/lib/api-client";
+import { useWallet } from "@/context/WalletContext";
 import { submitSepayCheckout } from "@/lib/sepayCheckout";
 import { formatVnd } from "@/lib/paymentPlans";
 
 export function DepositPoints() {
   const { t } = useLanguage();
-  const [stats, setStats] = useState<WalletStats | null>(null);
+  const { stats } = useWallet();
   const [billing, setBilling] = useState<BillingConfig | null>(null);
   const [selectedPlanId, setSelectedPlanId] = useState("500");
   const [paying, setPaying] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    Promise.all([getWalletStats(), getBillingConfig()])
-      .then(([walletStats, billingConfig]) => {
-        setStats(walletStats);
-        setBilling(billingConfig);
-      })
-      .catch(console.error);
+    getBillingConfig().then(setBilling).catch(console.error);
   }, []);
 
   const selectedPlan = billing?.plans.find((p) => p.id === selectedPlanId);

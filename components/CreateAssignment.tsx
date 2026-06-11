@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Calendar, BookOpen, Zap, ArrowRight, Wallet } from "lucide-react";
-import { createAssignment, getWalletStats } from "@/lib/api-client";
+import { createAssignment } from "@/lib/api-client";
 import { PointDistributionPreview } from "./PointDistributionPreview";
 import { LectureUpload } from "./LectureUpload";
 import { useLanguage } from "@/context/LanguageContext";
+import { formatPoints, useWallet } from "@/context/WalletContext";
 
 export function CreateAssignment() {
   const router = useRouter();
@@ -18,13 +19,9 @@ export function CreateAssignment() {
     depositPoints: 1000,
   });
   const [pdfFiles, setPdfFiles] = useState<File[]>([]);
-  const [balance, setBalance] = useState(2500);
+  const { stats, balance, refreshWallet } = useWallet();
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    getWalletStats().then((w) => setBalance(w.totalBalance)).catch(console.error);
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,6 +46,7 @@ export function CreateAssignment() {
       pdfFiles.forEach((file) => fd.append("lecturePdfs", file));
 
       const assignment = await createAssignment(fd);
+      await refreshWallet();
       router.push(`/roadmap/${assignment.id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create");
@@ -125,7 +123,7 @@ export function CreateAssignment() {
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  {t.depositAmount} ({t.availableBalance}: {balance})
+                  {t.depositAmount} ({t.availableBalance}: {formatPoints(stats?.totalBalance, !stats)})
                 </label>
                 <input
                   type="range"

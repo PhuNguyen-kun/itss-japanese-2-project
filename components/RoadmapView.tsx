@@ -7,6 +7,7 @@ import { deleteAssignment, getAssignment, getAssignments } from "@/lib/api-clien
 import { calculateAssignmentRefund, calculateForfeitedPoints } from "@/lib/assignmentUtils";
 import { RoadmapTimeline } from "./RoadmapTimeline";
 import { useLanguage } from "@/context/LanguageContext";
+import { useWallet } from "@/context/WalletContext";
 import type { Assignment } from "@/lib/types";
 
 interface RoadmapViewProps {
@@ -16,6 +17,7 @@ interface RoadmapViewProps {
 export function RoadmapView({ assignmentId }: RoadmapViewProps) {
   const router = useRouter();
   const { t } = useLanguage();
+  const { refreshWallet } = useWallet();
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [roadmap, setRoadmap] = useState<Assignment | null>(null);
   const [loading, setLoading] = useState(true);
@@ -43,6 +45,7 @@ export function RoadmapView({ assignmentId }: RoadmapViewProps) {
     setDeleteError(null);
     try {
       await deleteAssignment(deleteTarget.id);
+      await refreshWallet();
       setAssignments((prev) => prev.filter((a) => a.id !== deleteTarget.id));
       setDeleteTarget(null);
     } catch (err) {

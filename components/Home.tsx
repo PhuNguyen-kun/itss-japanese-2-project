@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Clock, TrendingDown, TrendingUp, AlertCircle, CheckCircle2, Calendar, Zap } from "lucide-react";
-import { getAssignments, getWalletStats } from "@/lib/api-client";
+import { getAssignments } from "@/lib/api-client";
 import { useState, useEffect } from "react";
 import { useLanguage } from "@/context/LanguageContext";
+import { formatPoints, useWallet } from "@/context/WalletContext";
 import { formatTimeRemaining } from "@/lib/timeFormat";
 import type { Assignment } from "@/lib/types";
 
@@ -13,20 +14,10 @@ export function Home() {
   const { t } = useLanguage();
   const router = useRouter();
   const [assignments, setAssignments] = useState<Assignment[]>([]);
-  const [wallet, setWallet] = useState({ balance: 2500, lost: 0, atRisk: 0, reclaimed: 0 });
+  const { stats } = useWallet();
 
   useEffect(() => {
-    Promise.all([getAssignments(), getWalletStats()])
-      .then(([a, w]) => {
-        setAssignments(a);
-        setWallet({
-          balance: w.totalBalance,
-          lost: w.lost,
-          atRisk: w.atRisk,
-          reclaimed: w.reclaimed,
-        });
-      })
-      .catch(console.error);
+    getAssignments().then(setAssignments).catch(console.error);
   }, []);
 
   const allTasks = assignments.flatMap(assignment =>
@@ -39,11 +30,11 @@ export function Home() {
       }))
   );
 
-  const totalPointsAvailable = wallet.balance;
+  const totalPointsAvailable = stats?.totalBalance;
   const pointsAtRisk = allTasks
     .filter(task => task.status === "active")
     .reduce((sum, task) => sum + task.pointsDeposited, 0);
-  const totalLost = wallet.lost;
+  const totalLost = stats?.lost ?? 0;
   const completedToday = assignments.flatMap(a => a.tasks).filter(
     t => t.status === "completed"
   ).length;
@@ -80,7 +71,9 @@ export function Home() {
             <span className="text-sm font-semibold text-gray-600">{t.totalPoints}</span>
             <Zap className="text-indigo-600" size={20} />
           </div>
-          <div className="text-3xl font-bold text-indigo-600">{totalPointsAvailable}</div>
+          <div className="text-3xl font-bold text-indigo-600">
+            {formatPoints(totalPointsAvailable, !stats)}
+          </div>
           <div className="text-xs text-gray-500 mt-1">{t.availableBalance}</div>
         </div>
 

@@ -3,19 +3,15 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, GitBranch, Wallet, Plus, Target, ChevronDown } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useLanguage } from "@/context/LanguageContext";
-import { getWalletStats } from "@/lib/api-client";
+import { formatPoints, useWallet } from "@/context/WalletContext";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { language, setLanguage, t } = useLanguage();
   const [langOpen, setLangOpen] = useState(false);
-  const [balance, setBalance] = useState(2500);
-
-  useEffect(() => {
-    getWalletStats().then((w) => setBalance(w.totalBalance)).catch(console.error);
-  }, [pathname]);
+  const { stats } = useWallet();
 
   const navItems = [
     { path: "/", icon: LayoutDashboard, label: t.navDashboard },
@@ -118,7 +114,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               <span className="text-sm text-indigo-300">{t.sidebarTotalPoints}</span>
               <Wallet size={16} className="text-yellow-400" />
             </div>
-            <div className="text-2xl font-bold">{balance.toLocaleString()}</div>
+            <div className="text-2xl font-bold">{formatPoints(stats?.totalBalance, !stats)}</div>
             <div className="text-xs text-indigo-300 mt-1">{t.sidebarKeepEarning}</div>
           </div>
         </div>

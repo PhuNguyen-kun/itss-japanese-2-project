@@ -4,11 +4,13 @@ import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
-import { syncPaymentOrder, getWalletStats } from "@/lib/api-client";
+import { syncPaymentOrder } from "@/lib/api-client";
+import { useWallet } from "@/context/WalletContext";
 import { formatVnd } from "@/lib/paymentPlans";
 
 function SepaySuccessContent() {
   const { t } = useLanguage();
+  const { refreshWallet } = useWallet();
   const router = useRouter();
   const searchParams = useSearchParams();
   const orderId = searchParams.get("order");
@@ -35,7 +37,7 @@ function SepaySuccessContent() {
         setAmountVnd(order.amountVnd);
 
         if (order.status === "PAID") {
-          await getWalletStats();
+          await refreshWallet();
           setStatus("paid");
           return;
         }
@@ -57,7 +59,7 @@ function SepaySuccessContent() {
     return () => {
       cancelled = true;
     };
-  }, [orderId]);
+  }, [orderId, refreshWallet]);
 
   return (
     <div className="p-6 max-w-md mx-auto text-center space-y-6 pt-16">
