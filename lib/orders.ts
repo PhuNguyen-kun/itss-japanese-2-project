@@ -1,5 +1,4 @@
-import { promises as fs } from "fs";
-import path from "path";
+import { readJson, writeJson } from "./storage";
 
 export type OrderStatus = "PENDING" | "PAID" | "CANCELLED" | "FAILED";
 
@@ -20,26 +19,23 @@ export interface PaymentOrder {
   };
 }
 
-const ORDERS_FILE = path.join(process.cwd(), "data", "orders.json");
+const ORDERS_KEY = "data/orders.json";
 
 async function ensureOrdersFile(): Promise<void> {
-  await fs.mkdir(path.dirname(ORDERS_FILE), { recursive: true });
-  try {
-    await fs.access(ORDERS_FILE);
-  } catch {
-    await fs.writeFile(ORDERS_FILE, "[]", "utf-8");
+  const orders = await readJson<PaymentOrder[] | null>(ORDERS_KEY, null);
+  if (orders === null) {
+    await writeJson(ORDERS_KEY, []);
   }
 }
 
 export async function getAllOrders(): Promise<PaymentOrder[]> {
   await ensureOrdersFile();
-  const raw = await fs.readFile(ORDERS_FILE, "utf-8");
-  return JSON.parse(raw) as PaymentOrder[];
+  return readJson(ORDERS_KEY, []);
 }
 
 async function saveOrders(orders: PaymentOrder[]): Promise<void> {
   await ensureOrdersFile();
-  await fs.writeFile(ORDERS_FILE, JSON.stringify(orders, null, 2), "utf-8");
+  await writeJson(ORDERS_KEY, orders);
 }
 
 export async function getOrderByInvoiceNumber(

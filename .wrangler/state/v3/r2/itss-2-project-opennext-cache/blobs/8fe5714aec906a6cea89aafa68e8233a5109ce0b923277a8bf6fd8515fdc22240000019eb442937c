@@ -1,0 +1,28 @@
+{
+  "balance": 3000,
+  "lost": 0,
+  "reclaimed": 0,
+  "transactions": [
+    {
+      "id": 3,
+      "type": "refund",
+      "task": "Xóa lộ trình: Giải tích 3",
+      "amount": 1000,
+      "date": "2026-06-11T01:18:42.534Z"
+    },
+    {
+      "id": 2,
+      "type": "deposit",
+      "task": "Giải tích 3",
+      "amount": 1000,
+      "date": "2026-06-11T01:18:28.846Z"
+    },
+    {
+      "id": 1,
+      "type": "topup",
+      "task": "SePay TC-1781140642723-WKO6SS",
+      "amount": 500,
+      "date": "2026-06-11T01:17:32.276Z"
+    }
+  ]
+}

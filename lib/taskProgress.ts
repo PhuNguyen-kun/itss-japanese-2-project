@@ -1,7 +1,4 @@
-import { promises as fs } from "fs";
-import path from "path";
-
-const PROGRESS_DIR = path.join(process.cwd(), "data", "task-progress");
+import { readJson, writeJson } from "./storage";
 
 export interface UploadedNote {
   path: string;
@@ -31,39 +28,34 @@ export interface TaskProgress {
   updatedAt: string;
 }
 
-function progressPath(assignmentId: number, taskId: number): string {
-  return path.join(PROGRESS_DIR, `${assignmentId}-${taskId}.json`);
+function progressKey(assignmentId: number, taskId: number): string {
+  return `data/task-progress/${assignmentId}-${taskId}.json`;
 }
 
 export async function getTaskProgress(
   assignmentId: number,
   taskId: number
 ): Promise<TaskProgress> {
-  await fs.mkdir(PROGRESS_DIR, { recursive: true });
-  try {
-    const raw = await fs.readFile(progressPath(assignmentId, taskId), "utf-8");
-    return JSON.parse(raw) as TaskProgress;
-  } catch {
-    return {
-      assignmentId,
-      taskId,
-      notes: [],
-      quiz: null,
-      history: [],
-      completedAt: null,
-      updatedAt: new Date().toISOString(),
-    };
-  }
+  const progress = await readJson<TaskProgress | null>(
+    progressKey(assignmentId, taskId),
+    null
+  );
+  if (progress) return progress;
+
+  return {
+    assignmentId,
+    taskId,
+    notes: [],
+    quiz: null,
+    history: [],
+    completedAt: null,
+    updatedAt: new Date().toISOString(),
+  };
 }
 
 export async function saveTaskProgress(progress: TaskProgress): Promise<void> {
-  await fs.mkdir(PROGRESS_DIR, { recursive: true });
   progress.updatedAt = new Date().toISOString();
-  await fs.writeFile(
-    progressPath(progress.assignmentId, progress.taskId),
-    JSON.stringify(progress, null, 2),
-    "utf-8"
-  );
+  await writeJson(progressKey(progress.assignmentId, progress.taskId), progress);
 }
 
 export async function addNoteToProgress(

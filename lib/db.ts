@@ -1,5 +1,11 @@
-import { promises as fs } from "fs";
 import path from "path";
+import {
+  deleteObject,
+  readBytes,
+  readJson,
+  writeBytes,
+  writeJson,
+} from "./storage";
 import {
   type Assignment,
   type AssignmentDTO,
@@ -7,30 +13,23 @@ import {
   assignmentToDTO,
 } from "./types";
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const ASSIGNMENTS_FILE = path.join(DATA_DIR, "assignments.json");
-const UPLOADS_DIR = path.join(process.cwd(), "uploads", "lectures");
-const NOTES_DIR = path.join(process.cwd(), "uploads", "notes");
-const QUIZ_DIR = path.join(process.cwd(), "data", "quizzes");
+const ASSIGNMENTS_KEY = "data/assignments.json";
 
 async function ensureDataFile(): Promise<void> {
-  await fs.mkdir(DATA_DIR, { recursive: true });
-  try {
-    await fs.access(ASSIGNMENTS_FILE);
-  } catch {
-    await fs.writeFile(ASSIGNMENTS_FILE, "[]", "utf-8");
+  const assignments = await readJson<AssignmentDTO[] | null>(ASSIGNMENTS_KEY, null);
+  if (assignments === null) {
+    await writeJson(ASSIGNMENTS_KEY, []);
   }
 }
 
 async function readAssignmentsDTO(): Promise<AssignmentDTO[]> {
   await ensureDataFile();
-  const raw = await fs.readFile(ASSIGNMENTS_FILE, "utf-8");
-  return JSON.parse(raw) as AssignmentDTO[];
+  return readJson(ASSIGNMENTS_KEY, []);
 }
 
 async function writeAssignmentsDTO(assignments: AssignmentDTO[]): Promise<void> {
   await ensureDataFile();
-  await fs.writeFile(ASSIGNMENTS_FILE, JSON.stringify(assignments, null, 2), "utf-8");
+  await writeJson(ASSIGNMENTS_KEY, assignments);
 }
 
 export async function getAllAssignments(): Promise<Assignment[]> {
@@ -72,17 +71,16 @@ export async function saveLecturePdfs(
   assignmentId: number,
   files: File[]
 ): Promise<string[]> {
-  await fs.mkdir(UPLOADS_DIR, { recursive: true });
   const paths: string[] = [];
 
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_") || `lecture-${i}.pdf`;
     const filename = `${assignmentId}-${i}-${safeName}`;
-    const filepath = path.join(UPLOADS_DIR, filename);
+    const key = `uploads/lectures/${filename}`;
     const buffer = Buffer.from(await file.arrayBuffer());
-    await fs.writeFile(filepath, buffer);
-    paths.push(`uploads/lectures/${filename}`);
+    await writeBytes(key, buffer);
+    paths.push(key);
   }
 
   return paths;
@@ -99,18 +97,17 @@ export async function saveNoteFile(
   taskId: number,
   file: File
 ): Promise<string> {
-  await fs.mkdir(NOTES_DIR, { recursive: true });
   const ext = path.extname(file.name) || ".txt";
   const filename = `${assignmentId}-${taskId}-${Date.now()}${ext}`;
-  const filepath = path.join(NOTES_DIR, filename);
+  const key = `uploads/notes/${filename}`;
   const buffer = Buffer.from(await file.arrayBuffer());
-  await fs.writeFile(filepath, buffer);
-  return `uploads/notes/${filename}`;
+  await writeBytes(key, buffer);
+  return key;
 }
 
 export async function readPdfBase64(relativePath: string): Promise<string> {
-  const filepath = path.join(process.cwd(), relativePath);
-  const buffer = await fs.readFile(filepath);
+  const buffer = await readBytes(relativePath);
+  if (!buffer) throw new Error(`File not found: ${relativePath}`);
   return buffer.toString("base64");
 }
 
@@ -123,26 +120,21 @@ export async function saveQuizSession(
   taskId: number,
   questions: unknown
 ): Promise<void> {
-  await fs.mkdir(QUIZ_DIR, { recursive: true });
-  const filepath = path.join(QUIZ_DIR, `${assignmentId}-${taskId}.json`);
-  await fs.writeFile(
-    filepath,
-    JSON.stringify({ assignmentId, taskId, questions, createdAt: new Date().toISOString() }, null, 2),
-    "utf-8"
-  );
+  const key = `data/quizzes/${assignmentId}-${taskId}.json`;
+  await writeJson(key, {
+    assignmentId,
+    taskId,
+    questions,
+    createdAt: new Date().toISOString(),
+  });
 }
 
 export async function getQuizSession(
   assignmentId: number,
   taskId: number
 ): Promise<{ questions: { id: number; question: string; options: string[]; correctIndex: number }[] } | null> {
-  const filepath = path.join(QUIZ_DIR, `${assignmentId}-${taskId}.json`);
-  try {
-    const raw = await fs.readFile(filepath, "utf-8");
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
+  const key = `data/quizzes/${assignmentId}-${taskId}.json`;
+  return readJson(key, null);
 }
 
 export function sumAtRiskPoints(assignments: Assignment[]): number {

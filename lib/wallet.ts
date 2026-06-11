@@ -1,8 +1,7 @@
-import { promises as fs } from "fs";
-import path from "path";
+import { readJson, readText, writeJson } from "./storage";
 import type { Wallet, WalletTransaction } from "./types";
 
-const WALLET_FILE = path.join(process.cwd(), "data", "wallet.json");
+const WALLET_KEY = "data/wallet.json";
 
 const DEFAULT_WALLET: Wallet = {
   balance: 2500,
@@ -12,23 +11,20 @@ const DEFAULT_WALLET: Wallet = {
 };
 
 async function ensureWalletFile(): Promise<void> {
-  await fs.mkdir(path.dirname(WALLET_FILE), { recursive: true });
-  try {
-    await fs.access(WALLET_FILE);
-  } catch {
-    await fs.writeFile(WALLET_FILE, JSON.stringify(DEFAULT_WALLET, null, 2), "utf-8");
+  const existing = await readText(WALLET_KEY);
+  if (existing === null) {
+    await writeJson(WALLET_KEY, DEFAULT_WALLET);
   }
 }
 
 export async function getWallet(): Promise<Wallet> {
   await ensureWalletFile();
-  const raw = await fs.readFile(WALLET_FILE, "utf-8");
-  return JSON.parse(raw) as Wallet;
+  return readJson(WALLET_KEY, DEFAULT_WALLET);
 }
 
 export async function saveWallet(wallet: Wallet): Promise<void> {
   await ensureWalletFile();
-  await fs.writeFile(WALLET_FILE, JSON.stringify(wallet, null, 2), "utf-8");
+  await writeJson(WALLET_KEY, wallet);
 }
 
 function nextTxId(wallet: Wallet): number {
