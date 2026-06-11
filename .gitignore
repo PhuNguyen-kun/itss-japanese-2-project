@@ -33,6 +33,9 @@ yarn-error.log*
 .env
 .env*.local
 
+# wrangler local dev state (miniflare cache, local R2 emulation)
+/.wrangler/
+
 # local app data (Workers production uses R2; do not commit user state)
 /data/
 
