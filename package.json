@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "build:cf": "opennextjs-cloudflare build",
-    "deploy:cf": "opennextjs-cloudflare build && wrangler deploy",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
     "start": "next start",
     "lint": "eslint"
   },
