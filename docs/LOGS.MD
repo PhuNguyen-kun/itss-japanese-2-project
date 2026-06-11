@@ -1,48 +1,51 @@
-07:57:21.258
-202 packages are looking for funding
-07:57:21.258
-  run `npm fund` for details
-07:57:21.314
-07:57:21.314
-4 moderate severity vulnerabilities
-07:57:21.315
-07:57:21.315
-To address all issues (including breaking changes), run:
-07:57:21.315
-  npm audit fix --force
-07:57:21.315
-07:57:21.315
-Run `npm audit` for details.
-07:57:21.611
-Executing user deploy command: npx wrangler deploy
-07:57:23.384
-07:57:23.387
- ⛅️ wrangler 4.99.0
-07:57:23.389
-───────────────────
-07:57:23.405
-07:57:23.405
-Cloudflare collects anonymous telemetry about your usage of Wrangler. Learn more at https://github.com/cloudflare/workers-sdk/tree/main/packages/wrangler/telemetry.md
-07:57:23.430
-OpenNext project detected, calling `opennextjs-cloudflare deploy`
-07:57:27.687
-07:57:27.687
-┌──────────────────────────────┐
-07:57:27.687
-│ OpenNext — Cloudflare deploy │
-07:57:27.687
-└──────────────────────────────┘
-07:57:27.687
-07:57:27.687
-ERROR Could not find compiled Open Next config, did you run the build command?
-07:57:27.719
-07:57:27.787
-✘ [ERROR] 
-07:57:27.787
-07:57:27.787
-07:57:27.811
-If you think this is a bug then please create an issue at https://github.com/cloudflare/workers-sdk/issues/new/choose
-07:57:27.832
-🪵  Logs were written to "/opt/buildhome/.config/.wrangler/logs/wrangler-2026-06-11_00-57-23_053.log"
-07:57:27.897
-Failed: error occurred while running deploy command
+08:01:24.725
+Total Upload: 6165.82 KiB / gzip: 1286.41 KiB
+08:01:28.309
+Worker Startup Time: 29 ms
+08:01:28.310
+Your Worker has access to the following bindings:
+08:01:28.311
+Binding                                                           Resource       
+08:01:28.311
+env.NEXT_INC_CACHE_R2_BUCKET (itss-2-project-opennext-cache)      R2 Bucket      
+08:01:28.311
+env.WORKER_SELF_REFERENCE (itss-japanese-2-project)               Worker         
+08:01:28.311
+env.IMAGES                                                        Images         
+08:01:28.311
+env.ASSETS                                                        Assets         
+08:01:28.311
+08:01:28.311
+Uploaded itss-japanese-2-project (7.26 sec)
+08:01:28.851
+Deployed itss-japanese-2-project triggers (0.54 sec)
+08:01:28.851
+  https://itss-japanese-2-project.nguyenphu43kun.workers.dev
+08:01:28.851
+Current Version ID: 46e296f6-89b1-4018-b905-8f9b9535a552
+08:01:28.941
+▲ [WARNING] Because 'workers_dev' is not in your Wrangler file, it will be enabled for this deployment by default.
+08:01:28.942
+08:01:28.942
+  To override this setting, you can disable workers.dev by explicitly setting 'workers_dev = false' in your Wrangler file.
+08:01:28.942
+08:01:28.942
+08:01:28.942
+▲ [WARNING] Because your 'workers.dev' route is enabled and your 'preview_urls' setting is not in your Wrangler file, Preview URLs will be enabled for this deployment by default.
+08:01:28.942
+08:01:28.942
+  To override this setting, you can disable Preview URLs by explicitly setting 'preview_urls = false' in your Wrangler file.
+08:01:28.942
+08:01:28.942
+08:01:29.049
+Success: Deploy command completed
+08:01:29.545
+Uploading to dependency cache
+08:01:29.548
+Uploading to build output cache
+08:01:29.950
+Success: Build output uploaded to build cache.
+08:01:33.666
+Success: Dependencies uploaded to build cache.
+08:01:33.781
+✨ Success! Build completed.
