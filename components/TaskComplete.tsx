@@ -101,7 +101,7 @@ export function TaskComplete({ assignmentId, taskId }: TaskCompleteProps) {
   };
 
   if (!task || !assignment) {
-    return <div className="p-8 text-gray-500">Loading...</div>;
+    return <div className="p-8 text-gray-500 max-w-4xl mx-auto w-full">Loading...</div>;
   }
 
   const isCompleted = task.status === "completed" || !!progress?.completedAt;
@@ -149,7 +149,7 @@ export function TaskComplete({ assignmentId, taskId }: TaskCompleteProps) {
   };
 
   return (
-    <div className="p-8 space-y-6 relative max-w-3xl">
+    <div className="p-8 space-y-6 relative max-w-4xl mx-auto w-full">
       {showSuccess && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
           <div className="bg-white rounded-2xl p-8 text-center space-y-4 max-w-sm mx-4">
