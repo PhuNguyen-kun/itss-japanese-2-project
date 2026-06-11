@@ -53,7 +53,7 @@ export interface AssignmentDTO {
 
 export interface WalletTransaction {
   id: number;
-  type: "deposit" | "reclaim" | "loss" | "topup";
+  type: "deposit" | "reclaim" | "loss" | "topup" | "refund";
   task: string;
   amount: number;
   date: string;

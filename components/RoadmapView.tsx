@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { TrendingDown, TrendingUp, AlertTriangle, Calendar, ArrowLeft } from "lucide-react";
-import { getAssignment, getAssignments } from "@/lib/api-client";
+import { TrendingDown, TrendingUp, AlertTriangle, Calendar, ArrowLeft, Trash2, Loader2 } from "lucide-react";
+import { deleteAssignment, getAssignment, getAssignments } from "@/lib/api-client";
+import { calculateAssignmentRefund, calculateForfeitedPoints } from "@/lib/assignmentUtils";
 import { RoadmapTimeline } from "./RoadmapTimeline";
 import { useLanguage } from "@/context/LanguageContext";
 import type { Assignment } from "@/lib/types";
@@ -18,6 +19,9 @@ export function RoadmapView({ assignmentId }: RoadmapViewProps) {
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [roadmap, setRoadmap] = useState<Assignment | null>(null);
   const [loading, setLoading] = useState(true);
+  const [deleteTarget, setDeleteTarget] = useState<Assignment | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   useEffect(() => {
     if (assignmentId === "all") {
@@ -33,10 +37,28 @@ export function RoadmapView({ assignmentId }: RoadmapViewProps) {
     }
   }, [assignmentId]);
 
+  const handleDelete = async () => {
+    if (!deleteTarget || deleting) return;
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      await deleteAssignment(deleteTarget.id);
+      setAssignments((prev) => prev.filter((a) => a.id !== deleteTarget.id));
+      setDeleteTarget(null);
+    } catch (err) {
+      setDeleteError(err instanceof Error ? err.message : "Delete failed");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   if (assignmentId === "all") {
     if (loading) {
-      return <div className="p-8 text-gray-500">Loading...</div>;
+      return <div className="p-8 text-gray-500">{t.loading}</div>;
     }
+
+    const refundPreview = deleteTarget ? calculateAssignmentRefund(deleteTarget) : 0;
+    const lostPreview = deleteTarget ? calculateForfeitedPoints(deleteTarget) : 0;
 
     return (
       <div className="p-8">
@@ -59,50 +81,74 @@ export function RoadmapView({ assignmentId }: RoadmapViewProps) {
         ) : (
           <div className="grid grid-cols-2 gap-6">
             {assignments.map((assignment) => {
-              const completed = assignment.tasks.filter(task => task.status === "completed").length;
+              const completed = assignment.tasks.filter((task) => task.status === "completed").length;
               const prog = (completed / assignment.tasks.length) * 100;
 
               return (
                 <div
                   key={assignment.id}
-                  onClick={() => router.push(`/roadmap/${assignment.id}`)}
-                  className="bg-white rounded-xl shadow-sm border-2 border-gray-200 p-6 hover:border-indigo-400 hover:shadow-lg cursor-pointer transition-all"
+                  className="bg-white rounded-xl shadow-sm border-2 border-gray-200 p-6 hover:border-indigo-400 hover:shadow-lg transition-all relative group"
                 >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <h3 className="text-lg font-bold text-gray-900 mb-1">{assignment.title}</h3>
-                      <p className="text-sm text-gray-600">{assignment.subject}</p>
-                    </div>
-                    <span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-semibold">
-                      {assignment.difficulty}/5
-                    </span>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setDeleteError(null);
+                      setDeleteTarget(assignment);
+                    }}
+                    className="absolute top-4 right-4 p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                    title={t.deleteRoadmap}
+                  >
+                    <Trash2 size={18} />
+                  </button>
 
-                  <div className="mb-4">
-                    <div className="flex items-center justify-between text-xs mb-2">
-                      <span className="text-gray-600">{t.progress}</span>
-                      <span className="font-bold text-indigo-600">{Math.round(prog)}%</span>
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => router.push(`/roadmap/${assignment.id}`)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        router.push(`/roadmap/${assignment.id}`);
+                      }
+                    }}
+                    className="cursor-pointer pr-10"
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex-1">
+                        <h3 className="text-lg font-bold text-gray-900 mb-1">{assignment.title}</h3>
+                        <p className="text-sm text-gray-600">{assignment.subject}</p>
+                      </div>
+                      <span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-semibold">
+                        {assignment.difficulty}/5
+                      </span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-gradient-to-r from-indigo-500 to-purple-600 h-2 rounded-full"
-                        style={{ width: `${prog}%` }}
-                      ></div>
-                    </div>
-                  </div>
 
-                  <div className="grid grid-cols-3 gap-3 text-center">
-                    <div>
-                      <div className="text-xl font-bold text-gray-900">{assignment.tasks.length}</div>
-                      <div className="text-xs text-gray-500">{t.tasks}</div>
+                    <div className="mb-4">
+                      <div className="flex items-center justify-between text-xs mb-2">
+                        <span className="text-gray-600">{t.progress}</span>
+                        <span className="font-bold text-indigo-600">{Math.round(prog)}%</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-gradient-to-r from-indigo-500 to-purple-600 h-2 rounded-full"
+                          style={{ width: `${prog}%` }}
+                        ></div>
+                      </div>
                     </div>
-                    <div>
-                      <div className="text-xl font-bold text-green-600">{completed}</div>
-                      <div className="text-xs text-gray-500">{t.tasksDone}</div>
-                    </div>
-                    <div>
-                      <div className="text-xl font-bold text-orange-600">{assignment.totalPoints}</div>
-                      <div className="text-xs text-gray-500">{t.points}</div>
+
+                    <div className="grid grid-cols-3 gap-3 text-center">
+                      <div>
+                        <div className="text-xl font-bold text-gray-900">{assignment.tasks.length}</div>
+                        <div className="text-xs text-gray-500">{t.tasks}</div>
+                      </div>
+                      <div>
+                        <div className="text-xl font-bold text-green-600">{completed}</div>
+                        <div className="text-xs text-gray-500">{t.tasksDone}</div>
+                      </div>
+                      <div>
+                        <div className="text-xl font-bold text-orange-600">{assignment.totalPoints}</div>
+                        <div className="text-xs text-gray-500">{t.points}</div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -110,12 +156,69 @@ export function RoadmapView({ assignmentId }: RoadmapViewProps) {
             })}
           </div>
         )}
+
+        {deleteTarget && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40">
+            <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-2">{t.deleteRoadmapTitle}</h2>
+              <p className="text-sm text-gray-600 mb-4">{t.deleteRoadmapDesc}</p>
+              <p className="font-semibold text-gray-900 mb-1">{deleteTarget.title}</p>
+
+              <div className="bg-gray-50 rounded-xl p-4 space-y-2 mb-4 text-sm">
+                {refundPreview > 0 ? (
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">{t.deleteRoadmapRefund}</span>
+                    <span className="font-bold text-green-600">+{refundPreview.toLocaleString()}</span>
+                  </div>
+                ) : (
+                  <p className="text-gray-500">{t.deleteRoadmapNoRefund}</p>
+                )}
+                {lostPreview > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">{t.deleteRoadmapLost}</span>
+                    <span className="font-bold text-red-600">{lostPreview.toLocaleString()}</span>
+                  </div>
+                )}
+              </div>
+
+              {deleteError && (
+                <p className="text-sm text-red-600 mb-3">{deleteError}</p>
+              )}
+
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  disabled={deleting}
+                  onClick={() => setDeleteTarget(null)}
+                  className="flex-1 py-2.5 rounded-xl border border-gray-300 font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                >
+                  {t.cancel}
+                </button>
+                <button
+                  type="button"
+                  disabled={deleting}
+                  onClick={handleDelete}
+                  className="flex-1 py-2.5 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700 disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {deleting ? (
+                    <>
+                      <Loader2 size={16} className="animate-spin" />
+                      {t.deleting}
+                    </>
+                  ) : (
+                    t.deleteRoadmapConfirm
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
 
   if (loading) {
-    return <div className="p-8 text-gray-500">Loading...</div>;
+    return <div className="p-8 text-gray-500">{t.loading}</div>;
   }
 
   if (!roadmap) {
@@ -140,6 +243,7 @@ export function RoadmapView({ assignmentId }: RoadmapViewProps) {
   const atRiskPoints = roadmap.tasks
     .filter(task => task.status === "active")
     .reduce((sum, task) => sum + task.pointsDeposited, 0);
+  const maxTaskPoints = Math.max(...roadmap.tasks.map((task) => task.pointsDeposited));
 
   return (
     <div className="p-8">
@@ -212,14 +316,20 @@ export function RoadmapView({ assignmentId }: RoadmapViewProps) {
       <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-200 rounded-xl p-6 mb-8">
         <h3 className="font-bold text-purple-900 mb-3">{t.pointDistStrategy}</h3>
         <p className="text-sm text-purple-700 mb-4">{t.pointDistDesc}</p>
-        <div className="flex items-end justify-between space-x-2 h-32">
+        <div className="flex justify-between gap-2 h-32 mb-2" role="img" aria-label={t.pointDistStrategy}>
           {roadmap.tasks.map((task, i) => (
-            <div key={i} className="flex-1 flex flex-col items-center justify-end">
+            <div key={i} className="flex-1 flex flex-col justify-end min-w-0">
               <div
-                className="w-full bg-gradient-to-t from-orange-500 via-yellow-400 to-yellow-300 rounded-t transition-all hover:opacity-80"
-                style={{ height: `${(task.pointsDeposited / Math.max(...roadmap.tasks.map(t => t.pointsDeposited))) * 100}%` }}
-              ></div>
-              <div className="text-xs font-bold text-gray-700 mt-2">{task.pointsDeposited}</div>
+                className="w-full min-h-[4px] bg-gradient-to-t from-orange-500 via-yellow-400 to-yellow-300 rounded-t transition-all hover:opacity-80"
+                style={{ height: `${(task.pointsDeposited / maxTaskPoints) * 100}%` }}
+              />
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-between gap-2">
+          {roadmap.tasks.map((task, i) => (
+            <div key={i} className="flex-1 text-center min-w-0">
+              <div className="text-xs font-bold text-gray-700">{task.pointsDeposited}</div>
               <div className="text-[10px] text-gray-500">T{i + 1}</div>
             </div>
           ))}

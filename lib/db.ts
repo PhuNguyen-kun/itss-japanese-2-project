@@ -59,6 +59,15 @@ export async function updateAssignment(assignment: Assignment): Promise<Assignme
   return assignment;
 }
 
+export async function deleteAssignmentById(id: number): Promise<boolean> {
+  const dtos = await readAssignmentsDTO();
+  const index = dtos.findIndex((a) => a.id === id);
+  if (index === -1) return false;
+  dtos.splice(index, 1);
+  await writeAssignmentsDTO(dtos);
+  return true;
+}
+
 export async function saveLecturePdfs(
   assignmentId: number,
   files: File[]

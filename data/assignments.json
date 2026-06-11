@@ -1,341 +1,71 @@
 [
   {
-    "id": 1781131500951,
-    "subject": "Software Engineering",
-    "title": "Final research paper",
-    "description": "Final research paper",
-    "finalDeadline": "2026-12-31T16:59:00.000Z",
-    "difficulty": "medium",
-    "totalPoints": 1470,
-    "tasks": [
-      {
-        "id": 1,
-        "title": "Problem Analysis",
-        "description": "Understand requirements and constraints",
-        "deadline": "2026-07-29T13:02:44.343Z",
-        "pointsDeposited": 120,
-        "status": "active",
-        "progress": 0
-      },
-      {
-        "id": 2,
-        "title": "Design Architecture",
-        "description": "Plan data structures and algorithms",
-        "deadline": "2026-09-03T13:23:18.514Z",
-        "pointsDeposited": 170,
-        "status": "upcoming",
-        "progress": 0
-      },
-      {
-        "id": 3,
-        "title": "Core Implementation",
-        "description": "Write main functionality",
-        "deadline": "2026-10-05T23:27:05.778Z",
-        "pointsDeposited": 220,
-        "status": "locked",
-        "progress": 0
-      },
-      {
-        "id": 4,
-        "title": "Feature Development",
-        "description": "Add required features",
-        "deadline": "2026-11-05T06:17:48.274Z",
-        "pointsDeposited": 270,
-        "status": "locked",
-        "progress": 0
-      },
-      {
-        "id": 5,
-        "title": "Testing & Debugging",
-        "description": "Write tests and fix bugs",
-        "deadline": "2026-12-04T01:17:10.159Z",
-        "pointsDeposited": 320,
-        "status": "locked",
-        "progress": 0
-      },
-      {
-        "id": 6,
-        "title": "Documentation",
-        "description": "Add comments and README",
-        "deadline": "2026-12-31T16:59:00.000Z",
-        "pointsDeposited": 370,
-        "status": "locked",
-        "progress": 0
-      }
-    ],
-    "createdAt": "2026-06-10T22:45:00.951Z"
-  },
-  {
-    "id": 1781131671256,
-    "subject": "Kỹ thuật phần mềm",
-    "title": "Cuối kỳ",
-    "finalDeadline": "2026-06-10T22:46:00.000Z",
-    "difficulty": 3,
-    "depositPoints": 1470,
-    "totalPoints": 1470,
-    "lecturePdfPath": "",
-    "createdAt": "2026-06-10T22:47:51.255Z",
-    "tasks": [
-      {
-        "id": 1,
-        "title": "Initial Research & Planning",
-        "description": "Gather sources and create outline",
-        "deadline": "2026-06-10T22:47:24.721Z",
-        "pointsDeposited": 120,
-        "status": "forfeited",
-        "progress": 0
-      },
-      {
-        "id": 2,
-        "title": "Draft First Section",
-        "description": "Complete introduction and context",
-        "deadline": "2026-06-10T22:47:05.057Z",
-        "pointsDeposited": 170,
-        "status": "forfeited",
-        "progress": 0
-      },
-      {
-        "id": 3,
-        "title": "Core Content Development",
-        "description": "Write main body and key arguments",
-        "deadline": "2026-06-10T22:46:47.355Z",
-        "pointsDeposited": 220,
-        "status": "forfeited",
-        "progress": 0
-      },
-      {
-        "id": 4,
-        "title": "Analysis & Evidence",
-        "description": "Add supporting data and citations",
-        "deadline": "2026-06-10T22:46:30.819Z",
-        "pointsDeposited": 270,
-        "status": "forfeited",
-        "progress": 0
-      },
-      {
-        "id": 5,
-        "title": "Draft Completion",
-        "description": "Finish all sections and connect ideas",
-        "deadline": "2026-06-10T22:46:15.099Z",
-        "pointsDeposited": 320,
-        "status": "forfeited",
-        "progress": 0
-      },
-      {
-        "id": 6,
-        "title": "Review & Refinement",
-        "description": "Edit for clarity and coherence",
-        "deadline": "2026-06-10T22:46:00.000Z",
-        "pointsDeposited": 370,
-        "status": "forfeited",
-        "progress": 0
-      }
-    ]
-  },
-  {
-    "id": 1781132841317,
+    "id": 1781137634934,
     "subject": "Giải tích 3",
     "title": "Giải tích 3",
     "finalDeadline": "2026-07-11T16:59:59.000Z",
     "difficulty": 4,
-    "depositPoints": 1000,
-    "totalPoints": 1000,
-    "lecturePdfPath": "uploads/lectures/1781132841317.pdf",
-    "tasks": [
-      {
-        "id": 1,
-        "title": "Initial Research & Planning",
-        "description": "Review core concepts for Giải tích 3",
-        "deadline": "2026-06-18T07:06:09.289Z",
-        "pointsDeposited": 26,
-        "status": "active",
-        "progress": 0
-      },
-      {
-        "id": 2,
-        "title": "Core Content Study",
-        "description": "Study main chapters and take notes",
-        "deadline": "2026-06-23T17:31:17.239Z",
-        "pointsDeposited": 71,
-        "status": "upcoming",
-        "progress": 0
-      },
-      {
-        "id": 3,
-        "title": "Practice & Application",
-        "description": "Apply concepts through exercises",
-        "deadline": "2026-06-28T14:55:18.365Z",
-        "pointsDeposited": 125,
-        "status": "locked",
-        "progress": 0
-      },
-      {
-        "id": 4,
-        "title": "Draft & Review",
-        "description": "Draft work and self-review",
-        "deadline": "2026-07-03T04:35:38.060Z",
-        "pointsDeposited": 187,
-        "status": "locked",
-        "progress": 0
-      },
-      {
-        "id": 5,
-        "title": "Deep Dive Analysis",
-        "description": "Analyze advanced topics in depth",
-        "deadline": "2026-07-07T12:51:21.052Z",
-        "pointsDeposited": 256,
-        "status": "locked",
-        "progress": 0
-      },
-      {
-        "id": 6,
-        "title": "Integration Phase",
-        "description": "Connect ideas across modules",
-        "deadline": "2026-07-11T16:59:59.000Z",
-        "pointsDeposited": 335,
-        "status": "locked",
-        "progress": 0
-      }
-    ],
-    "createdAt": "2026-06-10T23:07:21.782Z"
-  },
-  {
-    "id": 1781133108907,
-    "subject": "Giải tích 3",
-    "title": "Giải tích 3",
-    "finalDeadline": "2026-07-11T16:59:59.000Z",
-    "difficulty": 4,
-    "depositPoints": 1000,
-    "totalPoints": 1000,
-    "lecturePdfPath": "uploads/lectures/1781133108907.pdf",
-    "tasks": [
-      {
-        "id": 1,
-        "title": "Nắm vững Chuỗi số và các tiêu chuẩn hội tụ",
-        "description": "Hoàn thành Chương 1, Mục 1.1 Chuỗi số. Tập trung vào việc xét sự hội tụ và tính tổng của các chuỗi số (Bài 1), áp dụng các tiêu chuẩn hội tụ cho chuỗi số dương (Bài 2), và phân loại hội tụ tuyệt đối, bán hội tụ cho chuỗi đan dấu (Bài 3). Nắm vững lý thuyết về sự hội tụ của chuỗi (Bài 4).",
-        "deadline": "2026-06-18T07:09:49.573Z",
-        "pointsDeposited": 26,
-        "status": "active",
-        "progress": 0
-      },
-      {
-        "id": 2,
-        "title": "Hiểu Chuỗi hàm số và các khai triển Chuỗi",
-        "description": "Hoàn thành Chương 1, Mục 1.2 Chuỗi hàm số. Thực hành tìm miền hội tụ và xét sự hội tụ đều của chuỗi hàm số (Bài 5, Bài 6), chuỗi lũy thừa (Bài 7) và tính tổng chuỗi lũy thừa (Bài 8). Tiếp theo, ôn tập khai triển các hàm số thành chuỗi Maclaurin (Bài 9), chuỗi Taylor (Bài 10) và chuỗi Fourier cho các hàm tuần hoàn (Bài 11, Bài 12, Bài 13, Bài 14).",
-        "deadline": "2026-06-23T17:34:06.394Z",
-        "pointsDeposited": 71,
-        "status": "upcoming",
-        "progress": 0
-      },
-      {
-        "id": 3,
-        "title": "Giải Phương trình vi phân cấp một",
-        "description": "Hoàn thành Chương 2, Mục 2.1 Phương trình vi phân cấp một. Tập trung vào các phương pháp giải PTVP cấp một bao gồm: phương trình khuyết, phân ly, thuần nhất, tuyến tính, Bernoulli, toàn phần, và các phương trình cần đổi biến hoặc nhận dạng (Bài 15).",
-        "deadline": "2026-06-28T14:57:21.495Z",
-        "pointsDeposited": 125,
-        "status": "locked",
-        "progress": 0
-      },
-      {
-        "id": 4,
-        "title": "Giải Phương trình vi phân cấp hai và Hệ PTVP",
-        "description": "Hoàn thành Chương 2, Mục 2.2 Phương trình vi phân cấp hai và Mục 2.3 Hệ phương trình vi phân cấp một. Luyện tập giải PTVP cấp hai khuyết (Bài 16), PTVP tuyến tính hệ số hằng với vế phải đặc biệt (Bài 17), sử dụng phương pháp biến thiên hằng số (Bài 18), và PTVP tuyến tính có hệ số hàm số (Bài 19). Cuối cùng, giải các hệ phương trình vi phân cấp một (Bài 20).",
-        "deadline": "2026-07-03T04:36:58.194Z",
-        "pointsDeposited": 187,
-        "status": "locked",
-        "progress": 0
-      },
-      {
-        "id": 5,
-        "title": "Nắm vững Biến đổi Laplace cơ bản và ứng dụng giải PTVP",
-        "description": "Hoàn thành Chương 3, Mục 3.1 Phép biến đổi Laplace và phép biến đổi ngược, và Mục 3.2 Phép biến đổi của bài toán với giá trị ban đầu. Thực hành tìm biến đổi Laplace của các hàm số bằng định nghĩa và các công thức (Bài 21, Bài 22), tìm biến đổi Laplace ngược (Bài 23). Áp dụng biến đổi Laplace để giải các bài toán giá trị ban đầu cho PTVP (Bài 24).",
-        "deadline": "2026-07-07T12:52:00.312Z",
-        "pointsDeposited": 256,
-        "status": "locked",
-        "progress": 0
-      },
-      {
-        "id": 6,
-        "title": "Kỹ thuật nâng cao của Biến đổi Laplace và ứng dụng phức tạp",
-        "description": "Hoàn thành Chương 3, Mục 3.3 Phép tịnh tiến và phân thức đơn giản, Mục 3.4 Đạo hàm, tích phân và tích của các phép biến đổi. Luyện tập các kỹ thuật nâng cao để tìm biến đổi Laplace và biến đổi ngược (Bài 26, Bài 27, Bài 28, Bài 29). Áp dụng biến đổi Laplace để giải các hệ PTVP (Bài 25) và các bài toán giá trị ban đầu phức tạp hơn, bao gồm PTVP cấp hai với hệ số biến và hàm vế phải từng khúc (Bài 30, Bài 31).",
-        "deadline": "2026-07-11T16:59:59.000Z",
-        "pointsDeposited": 335,
-        "status": "locked",
-        "progress": 0
-      }
-    ],
-    "createdAt": "2026-06-10T23:12:11.060Z"
-  },
-  {
-    "id": 1781134225194,
-    "subject": "Xây dựng chương trình dịch",
-    "title": "Xây dựng chương trình dịch",
-    "finalDeadline": "2026-07-11T16:59:59.000Z",
-    "difficulty": 3,
     "depositPoints": 1000,
     "totalPoints": 1000,
     "lecturePdfPaths": [
-      "uploads/lectures/1781134225194-0-unit1.pdf",
-      "uploads/lectures/1781134225194-1-unit2.pdf",
-      "uploads/lectures/1781134225194-2-unit3.pdf",
-      "uploads/lectures/1781134225194-3-unit4.pdf",
-      "uploads/lectures/1781134225194-4-unit5.pdf",
-      "uploads/lectures/1781134225194-5-unit6.pdf",
-      "uploads/lectures/1781134225194-6-unit7.pdf",
-      "uploads/lectures/1781134225194-7-unit8.pdf",
-      "uploads/lectures/1781134225194-8-unit9.pdf",
-      "uploads/lectures/1781134225194-9-unit10.pdf",
-      "uploads/lectures/1781134225194-10-unit11.pdf",
-      "uploads/lectures/1781134225194-11-unit12.pdf",
-      "uploads/lectures/1781134225194-12-unit13.pdf"
+      "uploads/lectures/1781137634934-0-2025.1_MI1134_BTTK.pdf"
     ],
     "tasks": [
       {
         "id": 1,
-        "title": "Chương 1: Giới thiệu và Các Pha của Trình Biên Dịch",
-        "description": "Nghiên cứu tổng quan về môn học, các thế hệ ngôn ngữ lập trình (Bài 1, trang 8-12), đặc trưng của ngôn ngữ cấp cao (Bài 1, trang 13), khái niệm cú pháp và ngữ nghĩa (Bài 1, trang 14). Tìm hiểu về bộ xử lý ngôn ngữ, trình biên dịch và trình thông dịch, cùng các công cụ liên quan (Bài 1, trang 15-24). Đặc biệt, tập trung vào các pha chính của chương trình dịch: phân tích từ vựng, phân tích cú pháp, phân tích ngữ nghĩa, sinh mã trung gian, sinh mã đích và tối ưu mã (Bài 2, trang 2-4). Nắm vững định nghĩa hình thức của văn phạm (Bài 3, trang 9) và các khái niệm cơ bản về lý thuyết ngôn ngữ như ký hiệu, xâu, văn phạm sản sinh (Bài 3, trang 2-7). Cuối cùng, làm quen với cách biểu diễn văn phạm bằng BNF và EBNF, cùng sơ đồ cú pháp (Bài 4, trang 2-8, 17-25).",
-        "deadline": "2026-06-19T11:02:18.995Z",
-        "pointsDeposited": 40,
+        "title": "Chuỗi Số và Chuỗi Hàm Số Cơ Bản",
+        "description": "Nắm vững các khái niệm cơ bản về chuỗi.\n- Chuỗi số: Xét sự hội tụ và tính tổng (Bài 1, 2, 3, 4 trang 1).\n- Chuỗi hàm số: Tìm miền hội tụ (Bài 5, 6, 7 trang 2).\n- Chuỗi lũy thừa: Tìm miền hội tụ và tính tổng (Bài 7, 8 trang 2).",
+        "deadline": "2026-06-18T08:07:13.235Z",
+        "pointsDeposited": 26,
         "status": "active",
         "progress": 0
       },
       {
         "id": 2,
-        "title": "Chương 2: Phân Tích Từ Vựng và Cú Pháp Trên Xuống",
-        "description": "Đi sâu vào pha phân tích từ vựng, bao gồm nhiệm vụ của bộ phân tích từ vựng, cách phát hiện và bỏ qua các từ tố không cần thiết (Bài 5, trang 2-5). Nghiên cứu mô hình ôtômat hữu hạn (Bài 5, trang 6-9) và định nghĩa hình thức của ôtômat hữu hạn đơn định (Bài 5, trang 11-13) để nhận biết các từ tố của KPL (Bài 5, trang 10, 14). Tìm hiểu cách cài đặt bộ phân tích từ vựng, phân loại ký tự và cấu trúc dữ liệu cho từ tố (Bài 5, trang 16-18), cùng với việc xử lý định danh/từ khóa (Bài 5, trang 25-26) và các công cụ sinh bộ phân tích từ vựng như Lex/Flex (Bài 5, trang 27-47). Sau đó, chuyển sang phân tích cú pháp trên xuống, bắt đầu với giải thuật quay lui và các bước dựng cây phân tích cú pháp (Bài 6, trang 2-9, 11-13). Nắm vững điều kiện không đệ quy trái và phương pháp sử dụng stack để theo dõi quá trình phân tích (Bài 6, trang 10, 15-22). Cuối cùng, nghiên cứu phân tích tiền định, bao gồm các khái niệm FIRST và FOLLOW (Bài 7, trang 2-7), điều kiện nhận biết văn phạm LL(1) (Bài 7, trang 11-14) và phương pháp đệ quy trên xuống trong KPL (Bài 9, trang 2-20).",
-        "deadline": "2026-06-25T17:51:07.448Z",
-        "pointsDeposited": 106,
+        "title": "Khai Triển Chuỗi và Chuỗi Fourier",
+        "description": "Học cách khai triển hàm số thành chuỗi và áp dụng cho chuỗi Fourier.\n- Khai triển Maclaurin và Taylor (Bài 9, 10 trang 3).\n- Chuỗi Fourier: Khai triển hàm số tuần hoàn (Bài 11, 12, 13 trang 3).\n- Chuỗi Fourier: Tính giá trị S(x) của hàm số tại các điểm (Bài 14 trang 3).",
+        "deadline": "2026-06-23T18:18:10.766Z",
+        "pointsDeposited": 71,
         "status": "upcoming",
         "progress": 0
       },
       {
         "id": 3,
-        "title": "Chương 3: Phân Tích Ngữ Nghĩa và Quản Lý Bảng Ký Hiệu",
-        "description": "Tập trung vào pha phân tích ngữ nghĩa, tìm hiểu các vấn đề ngữ nghĩa chính như kiểm tra kiểu và xác định phạm vi ảnh hưởng của biến (Bài 10, trang 2-3). Nghiên cứu chi tiết về bảng ký hiệu (Symbol Table) làm cấu trúc dữ liệu để theo dõi định danh (Bài 10, trang 9), các vấn đề quản lý phạm vi tĩnh và động (Bài 10, trang 5-6), và các thao tác cần thiết để xây dựng bảng ký hiệu trong ngôn ngữ có cấu trúc khối (Bài 10, trang 10-13). Khám phá khái niệm biểu thức kiểu (Type Expression) và hệ thống kiểu (Type System) (Bài 10, trang 19-22). Tìm hiểu về định nghĩa tựa cú pháp (Syntax Directed Definition) và thuộc tính tổng hợp/kế thừa để đặc tả bộ kiểm tra kiểu (Bài 10, trang 23-30). Áp dụng các kiến thức này để kiểm tra kiểu cho định danh, biểu thức và lệnh trong KPL (Bài 10, trang 31-42), cũng như nhập thông tin kiểu của tham số hình thức và giá trị trả về của hàm vào bảng ký hiệu (Bài 10, trang 44-45).",
-        "deadline": "2026-07-01T09:36:40.158Z",
-        "pointsDeposited": 187,
+        "title": "Phương Trình Vi Phân Cấp Một",
+        "description": "Giải các dạng phương trình vi phân cấp một khác nhau.\n- Phương trình vi phân cấp một: Khuyết, phân ly (Bài 15.1, 15.2 trang 4).\n- Phương trình vi phân cấp một: Thuần nhất, tuyến tính (Bài 15.3, 15.4 trang 4).\n- Phương trình vi phân cấp một: Bernoulli, toàn phần (Bài 15.5, 15.6 trang 4).\n- Phương trình vi phân cấp một: Cần đổi biến và/hoặc nhận dạng (Bài 15.7 trang 5).",
+        "deadline": "2026-06-28T15:29:26.363Z",
+        "pointsDeposited": 125,
         "status": "locked",
         "progress": 0
       },
       {
         "id": 4,
-        "title": "Chương 4: Sinh Mã Trung Gian",
-        "description": "Nghiên cứu pha sinh mã trung gian, hiểu rõ vai trò của mã trung gian như mã ba địa chỉ, ký pháp Ba Lan sau hoặc cây cú pháp (Bài 11, trang 3-4). Nắm vững tập mã lệnh ba địa chỉ điển hình cho các lệnh gán, phép toán một ngôi, sao chép, nhảy có/không điều kiện, lời gọi thủ tục và lệnh gán có chỉ số (Bài 11, trang 6-7). Tìm hiểu cách dịch trực tiếp cú pháp thành mã ba địa chỉ thông qua ĐNTCP, sử dụng các thuộc tính như E.place và E.code (Bài 11, trang 8-9, 15). Khám phá cách cài đặt câu lệnh ba địa chỉ bằng bộ bốn (quadruples), bộ ba (triples) và bộ ba gián tiếp (Bài 11, trang 11-14). Đặc biệt, tập trung vào sinh mã trung gian cho các biểu thức logic (Bài 11, trang 18-20, 24-26) và các cấu trúc lập trình điều khiển như if-then, if-then-else, while-do (Bài 11, trang 21-23, 34-35).",
-        "deadline": "2026-07-06T16:26:00.789Z",
-        "pointsDeposited": 281,
+        "title": "Phương Trình Vi Phân Cấp Hai và Hệ Phương Trình",
+        "description": "Giải các phương trình vi phân cấp hai và hệ phương trình vi phân.\n- Phương trình vi phân cấp hai khuyết (Bài 16 trang 5).\n- Phương trình vi phân cấp hai tuyến tính hệ số hằng (Bài 17 trang 5).\n- Phương trình vi phân cấp hai: Biến thiên hằng số, hệ số hàm số (Bài 18, 19 trang 5).\n- Hệ phương trình vi phân cấp một (Bài 20 trang 6).",
+        "deadline": "2026-07-03T04:57:50.922Z",
+        "pointsDeposited": 187,
         "status": "locked",
         "progress": 0
       },
       {
         "id": 5,
-        "title": "Chương 5: Tối Ưu Mã và Sinh Mã Đích",
-        "description": "Nghiên cứu các kỹ thuật tối ưu mã ở các mức độ cục bộ, trong khối cơ sở và trên đồ thị dòng điều khiển (CFG) (Bài 12, trang 3-4, 14). Tìm hiểu các kỹ thuật tối ưu cục bộ như truyền hằng, loại bỏ mã không đến được, tối ưu dòng điều khiển, giản lược biểu thức đại số và loại mã chết (Bài 12, trang 5-6). Nắm vững giải thuật phân chia các khối cơ bản và cách áp dụng các tối ưu như loại bỏ biểu thức con chung, truyền hằng, copy propagation và giảm chi phí trong các khối cơ bản và trên CFG (Bài 12, trang 7-13, 16-33). Cuối cùng, chuyển sang pha sinh mã đích, hiểu về chương trình đích và máy ngăn xếp (stack calculator) (Bài 13, trang 3-5). Nghiên cứu cấu trúc bộ nhớ của máy ngăn xếp, các thanh ghi (PC, B, T) và bản hoạt động (activation record/stack frame) (Bài 13, trang 6-10). Tìm hiểu bộ lệnh của máy ngăn xếp, bao gồm các lệnh tính toán, so sánh, chuyển điều khiển và vào/ra (Bài 13, trang 11-15). Áp dụng các kiến thức này để sinh mã đích cho lệnh gán, lệnh if, while, for (Bài 13, trang 16, 22-24), cách lấy địa chỉ/giá trị biến và tham số (Bài 13, trang 25-28), và quy trình sinh lời gọi hàm/thủ tục (Bài 13, trang 29-32).",
+        "title": "Biến Đổi Laplace Cơ Bản",
+        "description": "Nắm vững phép biến đổi Laplace và biến đổi ngược cơ bản.\n- Biến đổi Laplace: Sử dụng định nghĩa và tìm biến đổi của hàm số (Bài 21, 22 trang 7).\n- Biến đổi Laplace ngược: Tìm biến đổi ngược của các hàm số (Bài 23 trang 7).\n- Phép tịnh tiến và phân thức đơn giản trong biến đổi Laplace (Bài 26, 27 trang 8).",
+        "deadline": "2026-07-07T13:02:14.057Z",
+        "pointsDeposited": 256,
+        "status": "locked",
+        "progress": 0
+      },
+      {
+        "id": 6,
+        "title": "Ứng Dụng Nâng Cao của Biến Đổi Laplace",
+        "description": "Áp dụng biến đổi Laplace để giải các bài toán phức tạp hơn.\n- Biến đổi Laplace của đạo hàm, tích phân và tích của các phép biến đổi (Bài 28, 29 trang 8-9).\n- Giải bài toán giá trị ban đầu bằng biến đổi Laplace (Bài 24, 25 trang 7-8).\n- Giải các bài toán giá trị ban đầu phức tạp với hàm f(t) (Bài 30, 31 trang 9).",
         "deadline": "2026-07-11T16:59:59.000Z",
-        "pointsDeposited": 386,
+        "pointsDeposited": 335,
         "status": "locked",
         "progress": 0
       }
     ],
-    "createdAt": "2026-06-10T23:32:22.012Z"
+    "createdAt": "2026-06-11T00:27:33.237Z"
   }
 ]

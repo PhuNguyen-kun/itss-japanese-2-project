@@ -157,7 +157,7 @@ export function RoadmapTimeline({ tasks, assignmentId }: RoadmapTimelineProps) {
                       href={`/roadmap/${assignmentId}/task/${task.id}`}
                       className="block w-full text-center bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-lg font-bold hover:from-green-600 hover:to-emerald-700 transition-all"
                     >
-                      {t.completeTaskTimeline} & {t.reclaimed} {task.pointsDeposited} {t.pointsSuffix}
+                      {t.completeTaskBtn} {task.pointsDeposited} {t.pointsSuffix}
                     </Link>
                   </div>
                 )}

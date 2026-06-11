@@ -32,6 +32,15 @@ export async function createAssignment(formData: FormData): Promise<Assignment> 
   return assignmentFromDTO(dto);
 }
 
+export async function deleteAssignment(
+  id: number
+): Promise<{ success: boolean; refundedPoints: number; forfeitedPointsKept: number }> {
+  const res = await fetch(`/api/assignments/${id}`, { method: "DELETE" });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Failed to delete assignment");
+  return data;
+}
+
 export interface WalletStats {
   totalBalance: number;
   deposited: number;
@@ -40,7 +49,7 @@ export interface WalletStats {
   reclaimed: number;
   recentTransactions: {
     id: number;
-    type: "deposit" | "reclaim" | "loss" | "topup";
+    type: "deposit" | "reclaim" | "loss" | "topup" | "refund";
     task: string;
     amount: number;
     date: string;

@@ -24,13 +24,13 @@ export function PointDistributionPreview({
         {milestoneCount} {t.tasks} · {depositPoints} {t.pointsSuffix}
       </p>
 
-      <div className="flex items-end justify-between space-x-1 h-24 mb-2">
+      <div className="flex justify-between gap-1 h-24 mb-2" role="img" aria-label={t.pointDistTitle}>
         {points.map((point, index) => (
-          <div key={index} className="flex-1 flex flex-col items-center justify-end">
+          <div key={index} className="flex-1 flex flex-col justify-end min-w-0">
             <div
-              className="w-full bg-gradient-to-t from-orange-500 via-yellow-400 to-yellow-300 rounded-t transition-all"
+              className="w-full min-h-[4px] bg-gradient-to-t from-orange-500 via-yellow-400 to-yellow-300 rounded-t transition-all"
               style={{ height: `${(point / maxPoints) * 100}%` }}
-            ></div>
+            />
           </div>
         ))}
       </div>

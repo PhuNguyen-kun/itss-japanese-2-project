@@ -109,6 +109,20 @@ export async function topUpPoints(
   return wallet;
 }
 
+export async function refundPoints(amount: number, label: string): Promise<Wallet> {
+  const wallet = await getWallet();
+  wallet.balance += amount;
+  wallet.transactions.unshift({
+    id: nextTxId(wallet),
+    type: "refund",
+    task: label,
+    amount,
+    date: new Date().toISOString(),
+  });
+  await saveWallet(wallet);
+  return wallet;
+}
+
 export function getWalletStats(wallet: Wallet, assignmentsAtRisk: number) {
   return {
     totalBalance: wallet.balance,

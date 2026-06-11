@@ -190,14 +190,14 @@ export function DepositPoints() {
                 <div className="flex items-center space-x-3">
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                      transaction.type === "reclaim" || transaction.type === "topup"
-                        ? "bg-green-100"
+                    transaction.type === "reclaim" || transaction.type === "topup" || transaction.type === "refund"
+                      ? "bg-green-100"
                         : transaction.type === "loss"
                         ? "bg-red-100"
                         : "bg-blue-100"
                     }`}
                   >
-                    {transaction.type === "reclaim" || transaction.type === "topup" ? (
+                    {transaction.type === "reclaim" || transaction.type === "topup" || transaction.type === "refund" ? (
                       <TrendingUp className="text-green-600" size={20} />
                     ) : transaction.type === "loss" ? (
                       <TrendingDown className="text-red-600" size={20} />
@@ -216,14 +216,14 @@ export function DepositPoints() {
                 </div>
                 <span
                   className={`font-bold ${
-                    transaction.type === "reclaim" || transaction.type === "topup"
+                    transaction.type === "reclaim" || transaction.type === "topup" || transaction.type === "refund"
                       ? "text-green-600"
                       : transaction.type === "loss"
                       ? "text-red-600"
                       : "text-blue-600"
                   }`}
                 >
-                  {transaction.type === "reclaim" || transaction.type === "topup" ? "+" : "-"}
+                  {transaction.type === "reclaim" || transaction.type === "topup" || transaction.type === "refund" ? "+" : "-"}
                   {transaction.amount.toLocaleString()}
                 </span>
               </div>

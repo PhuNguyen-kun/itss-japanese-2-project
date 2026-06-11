@@ -1,8 +1,43 @@
 {
-  "balance": 4350,
+  "balance": 7820,
   "lost": 1470,
   "reclaimed": 0,
   "transactions": [
+    {
+      "id": 16,
+      "type": "deposit",
+      "task": "Giải tích 3",
+      "amount": 1000,
+      "date": "2026-06-11T00:27:33.236Z"
+    },
+    {
+      "id": 15,
+      "type": "refund",
+      "task": "Xóa lộ trình: Xây dựng chương trình dịch",
+      "amount": 1000,
+      "date": "2026-06-11T00:13:56.258Z"
+    },
+    {
+      "id": 14,
+      "type": "refund",
+      "task": "Xóa lộ trình: Giải tích 3",
+      "amount": 1000,
+      "date": "2026-06-11T00:13:54.943Z"
+    },
+    {
+      "id": 13,
+      "type": "refund",
+      "task": "Xóa lộ trình: Giải tích 3",
+      "amount": 1000,
+      "date": "2026-06-11T00:13:53.482Z"
+    },
+    {
+      "id": 12,
+      "type": "refund",
+      "task": "Xóa lộ trình: Software Engineering",
+      "amount": 1470,
+      "date": "2026-06-11T00:13:48.064Z"
+    },
     {
       "id": 11,
       "type": "topup",
