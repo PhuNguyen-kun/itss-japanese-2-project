@@ -1,8 +1,15 @@
 {
-  "balance": 3000,
+  "balance": 2000,
   "lost": 0,
   "reclaimed": 0,
   "transactions": [
+    {
+      "id": 4,
+      "type": "deposit",
+      "task": "Giải tích 3",
+      "amount": 1000,
+      "date": "2026-06-11T01:20:45.435Z"
+    },
     {
       "id": 3,
       "type": "refund",
