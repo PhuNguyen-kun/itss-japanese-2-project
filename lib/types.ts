@@ -23,7 +23,7 @@ export interface Assignment {
   difficulty: number;
   depositPoints: number;
   totalPoints: number;
-  lecturePdfPath: string;
+  lecturePdfPaths: string[];
   tasks: Milestone[];
   createdAt: Date;
 }
@@ -46,14 +46,14 @@ export interface AssignmentDTO {
   difficulty: number;
   depositPoints: number;
   totalPoints: number;
-  lecturePdfPath: string;
+  lecturePdfPaths: string[];
   tasks: MilestoneDTO[];
   createdAt: string;
 }
 
 export interface WalletTransaction {
   id: number;
-  type: "deposit" | "reclaim" | "loss";
+  type: "deposit" | "reclaim" | "loss" | "topup";
   task: string;
   amount: number;
   date: string;
@@ -92,6 +92,16 @@ export function assignmentToDTO(assignment: Assignment): AssignmentDTO {
   };
 }
 
+/** Resolve lecture paths from current or legacy assignment data */
+export function getLecturePaths(source: {
+  lecturePdfPaths?: string[];
+  lecturePdfPath?: string;
+}): string[] {
+  if (source.lecturePdfPaths?.length) return source.lecturePdfPaths;
+  if (source.lecturePdfPath) return [source.lecturePdfPath];
+  return [];
+}
+
 export function assignmentFromDTO(dto: AssignmentDTO): Assignment {
   return {
     id: dto.id,
@@ -101,7 +111,7 @@ export function assignmentFromDTO(dto: AssignmentDTO): Assignment {
     difficulty: typeof dto.difficulty === "number" ? dto.difficulty : 3,
     depositPoints: dto.depositPoints ?? dto.totalPoints ?? 0,
     totalPoints: dto.totalPoints,
-    lecturePdfPath: dto.lecturePdfPath ?? "",
+    lecturePdfPaths: getLecturePaths(dto as AssignmentDTO & { lecturePdfPath?: string }),
     createdAt: new Date(dto.createdAt),
     tasks: dto.tasks.map((task) => ({
       ...task,

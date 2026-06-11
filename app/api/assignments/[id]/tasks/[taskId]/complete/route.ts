@@ -2,11 +2,11 @@ import { NextResponse } from "next/server";
 import {
   getAssignmentById,
   getQuizSession,
-  saveNoteFile,
   updateAssignment,
 } from "@/lib/db";
 import { gradeQuiz } from "@/lib/gemini";
 import { completeTask } from "@/lib/overdue";
+import { getTaskProgress, recordQuizAttempt } from "@/lib/taskProgress";
 
 export async function POST(
   request: Request,
@@ -35,36 +35,40 @@ export async function POST(
       return NextResponse.json({ error: "Task is overdue" }, { status: 400 });
     }
 
-    const formData = await request.formData();
-    const answersRaw = formData.get("answers") as string;
-    const noteFiles = formData.getAll("notes") as File[];
+    const body = await request.json();
+    const answers: number[] = body.answers;
 
-    if (!noteFiles.length || noteFiles.every((f) => !f.size)) {
-      return NextResponse.json({ error: "Upload at least one note file" }, { status: 400 });
-    }
-
-    if (!answersRaw) {
+    if (!answers?.length) {
       return NextResponse.json({ error: "Quiz answers required" }, { status: 400 });
     }
 
-    const answers: number[] = JSON.parse(answersRaw);
+    const progress = await getTaskProgress(assignmentId, taskIdNum);
+    if (!progress.notes.length) {
+      return NextResponse.json({ error: "Upload at least one note file first" }, { status: 400 });
+    }
+
     const quiz = await getQuizSession(assignmentId, taskIdNum);
     if (!quiz?.questions?.length) {
       return NextResponse.json({ error: "Quiz not found. Generate quiz first." }, { status: 400 });
     }
 
     const { correct, passed } = gradeQuiz(quiz.questions, answers);
+
+    const attempt = {
+      submittedAt: new Date().toISOString(),
+      answers,
+      correct,
+      passed,
+      notePaths: progress.notes.map((n) => n.path),
+    };
+
+    await recordQuizAttempt(assignmentId, taskIdNum, attempt, passed);
+
     if (!passed) {
       return NextResponse.json(
         { error: `Need 7/10 correct. You got ${correct}/10.`, correct, passed: false },
         { status: 400 }
       );
-    }
-
-    for (const file of noteFiles) {
-      if (file.size > 0) {
-        await saveNoteFile(assignmentId, taskIdNum, file);
-      }
     }
 
     const updated = await completeTask(assignment, taskIdNum);

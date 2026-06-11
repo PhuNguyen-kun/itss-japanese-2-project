@@ -59,17 +59,30 @@ export async function updateAssignment(assignment: Assignment): Promise<Assignme
   return assignment;
 }
 
-export async function saveLecturePdf(
+export async function saveLecturePdfs(
   assignmentId: number,
-  file: File
-): Promise<string> {
+  files: File[]
+): Promise<string[]> {
   await fs.mkdir(UPLOADS_DIR, { recursive: true });
-  const ext = path.extname(file.name) || ".pdf";
-  const filename = `${assignmentId}${ext}`;
-  const filepath = path.join(UPLOADS_DIR, filename);
-  const buffer = Buffer.from(await file.arrayBuffer());
-  await fs.writeFile(filepath, buffer);
-  return `uploads/lectures/${filename}`;
+  const paths: string[] = [];
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_") || `lecture-${i}.pdf`;
+    const filename = `${assignmentId}-${i}-${safeName}`;
+    const filepath = path.join(UPLOADS_DIR, filename);
+    const buffer = Buffer.from(await file.arrayBuffer());
+    await fs.writeFile(filepath, buffer);
+    paths.push(`uploads/lectures/${filename}`);
+  }
+
+  return paths;
+}
+
+/** @deprecated use saveLecturePdfs */
+export async function saveLecturePdf(assignmentId: number, file: File): Promise<string> {
+  const paths = await saveLecturePdfs(assignmentId, [file]);
+  return paths[0];
 }
 
 export async function saveNoteFile(
@@ -90,6 +103,10 @@ export async function readPdfBase64(relativePath: string): Promise<string> {
   const filepath = path.join(process.cwd(), relativePath);
   const buffer = await fs.readFile(filepath);
   return buffer.toString("base64");
+}
+
+export async function readPdfsBase64(relativePaths: string[]): Promise<string[]> {
+  return Promise.all(relativePaths.map((p) => readPdfBase64(p)));
 }
 
 export async function saveQuizSession(

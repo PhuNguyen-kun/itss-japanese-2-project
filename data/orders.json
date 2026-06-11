@@ -1,0 +1,60 @@
+[
+  {
+    "orderInvoiceNumber": "TC-1781136393678-QKHHXY",
+    "status": "PAID",
+    "amountVnd": 10000,
+    "points": 100,
+    "planId": "100",
+    "createdAt": "2026-06-11T00:06:33.678Z",
+    "metadata": {
+      "paymentGateway": "sepay",
+      "syncedAt": "2026-06-11T00:06:49.946Z",
+      "rawOrder": {
+        "data": {
+          "id": "6780bc1c-6529-11f1-b21a-a6006ab65aca",
+          "customer_id": null,
+          "order_id": "PAY29826A29FBDF4699D",
+          "order_invoice_number": "TC-1781136393678-QKHHXY",
+          "order_status": "CAPTURED",
+          "order_amount": "10000.00",
+          "order_currency": "VND",
+          "order_description": "Nap 100 diem TaskCommit",
+          "authentication_status": null,
+          "created_at": "2026-06-11 07:06:32",
+          "updated_at": "2026-06-11 07:06:42",
+          "transactions": []
+        }
+      }
+    },
+    "paidAt": "2026-06-11T00:06:49.948Z"
+  },
+  {
+    "orderInvoiceNumber": "TC-1781136107653-1L44W5",
+    "status": "PAID",
+    "amountVnd": 250000,
+    "points": 250,
+    "planId": "250",
+    "createdAt": "2026-06-11T00:01:47.653Z",
+    "metadata": {
+      "paymentGateway": "sepay",
+      "syncedAt": "2026-06-11T00:05:56.792Z",
+      "rawOrder": {
+        "data": {
+          "id": "bd14fe79-6528-11f1-b21a-a6006ab65aca",
+          "customer_id": null,
+          "order_id": "PAY29826A29FAC15A937",
+          "order_invoice_number": "TC-1781136107653-1L44W5",
+          "order_status": "CAPTURED",
+          "order_amount": "250000.00",
+          "order_currency": "VND",
+          "order_description": "Nap 250 diem TaskCommit",
+          "authentication_status": null,
+          "created_at": "2026-06-11 07:01:47",
+          "updated_at": "2026-06-11 07:01:52",
+          "transactions": []
+        }
+      }
+    },
+    "paidAt": "2026-06-11T00:05:56.793Z"
+  }
+]

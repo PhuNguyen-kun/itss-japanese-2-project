@@ -92,6 +92,23 @@ export async function forfeitPoints(
   return wallet;
 }
 
+export async function topUpPoints(
+  amount: number,
+  orderInvoiceNumber: string
+): Promise<Wallet> {
+  const wallet = await getWallet();
+  wallet.balance += amount;
+  wallet.transactions.unshift({
+    id: nextTxId(wallet),
+    type: "topup",
+    task: `SePay ${orderInvoiceNumber}`,
+    amount,
+    date: new Date().toISOString(),
+  });
+  await saveWallet(wallet);
+  return wallet;
+}
+
 export function getWalletStats(wallet: Wallet, assignmentsAtRisk: number) {
   return {
     totalBalance: wallet.balance,

@@ -1,22 +1,63 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Wallet, TrendingUp, TrendingDown, AlertCircle, Zap } from "lucide-react";
+import {
+  Wallet,
+  TrendingUp,
+  TrendingDown,
+  AlertCircle,
+  CreditCard,
+  CheckCircle2,
+  Loader2,
+} from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
-import { getWalletStats, type WalletStats } from "@/lib/api-client";
+import {
+  getWalletStats,
+  getBillingConfig,
+  createSepayCheckout,
+  type WalletStats,
+  type BillingConfig,
+} from "@/lib/api-client";
+import { submitSepayCheckout } from "@/lib/sepayCheckout";
+import { formatVnd } from "@/lib/paymentPlans";
 
 export function DepositPoints() {
   const { t } = useLanguage();
-  const [depositAmount, setDepositAmount] = useState(500);
   const [stats, setStats] = useState<WalletStats | null>(null);
+  const [billing, setBilling] = useState<BillingConfig | null>(null);
+  const [selectedPlanId, setSelectedPlanId] = useState("500");
+  const [paying, setPaying] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getWalletStats().then(setStats).catch(console.error);
+    Promise.all([getWalletStats(), getBillingConfig()])
+      .then(([walletStats, billingConfig]) => {
+        setStats(walletStats);
+        setBilling(billingConfig);
+      })
+      .catch(console.error);
   }, []);
 
-  if (!stats) {
-    return <div className="p-8 text-gray-500">Loading...</div>;
+  const selectedPlan = billing?.plans.find((p) => p.id === selectedPlanId);
+
+  const handlePay = async () => {
+    if (!selectedPlanId || paying) return;
+    setPaying(true);
+    setError(null);
+    try {
+      const { checkoutUrl, formFields } = await createSepayCheckout(selectedPlanId);
+      submitSepayCheckout(checkoutUrl, formFields);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Payment failed");
+      setPaying(false);
+    }
+  };
+
+  if (!stats || !billing) {
+    return <div className="p-8 text-gray-500">{t.loading}</div>;
   }
+
+  const sepayEnabled = billing.sepay.enabled;
 
   return (
     <div className="p-4 space-y-6">
@@ -59,38 +100,79 @@ export function DepositPoints() {
       </div>
 
       <div className="bg-white rounded-xl p-5 shadow-md border border-gray-200">
-        <h2 className="font-bold text-gray-900 mb-4">{t.addPoints}</h2>
-        <p className="text-sm text-gray-600 mb-4">{t.depositNote}</p>
+        <h2 className="font-bold text-gray-900 mb-1">{t.addPoints}</h2>
+        <p className="text-sm text-gray-600 mb-4">{t.conversionRate}</p>
 
-        <div className="mb-4">
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            {t.depositAmount}
-          </label>
-          <input
-            type="range"
-            min="100"
-            max="1000"
-            step="50"
-            value={depositAmount}
-            onChange={(e) => setDepositAmount(parseInt(e.target.value))}
-            className="w-full"
-            disabled
-          />
-          <div className="flex justify-between text-xs text-gray-500 mt-1">
-            <span>100</span>
-            <span className="text-2xl font-bold text-indigo-600">{depositAmount}</span>
-            <span>1000</span>
+        {!sepayEnabled && (
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4 text-sm text-amber-800">
+            {t.sepayNotConfigured}
           </div>
+        )}
+
+        <p className="text-sm font-semibold text-gray-700 mb-3">{t.selectPackage}</p>
+        <div className="grid grid-cols-2 gap-3 mb-5">
+          {billing.plans.map((plan) => {
+            const selected = plan.id === selectedPlanId;
+            return (
+              <button
+                key={plan.id}
+                type="button"
+                disabled={!sepayEnabled || paying}
+                onClick={() => setSelectedPlanId(plan.id)}
+                className={`rounded-xl border-2 p-4 text-left transition-all ${
+                  selected
+                    ? "border-indigo-500 bg-indigo-50 ring-2 ring-indigo-200"
+                    : "border-gray-200 hover:border-indigo-300"
+                } ${!sepayEnabled ? "opacity-50 cursor-not-allowed" : ""}`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl font-bold text-indigo-600">
+                    {plan.points.toLocaleString()}
+                  </span>
+                  {selected && <CheckCircle2 className="text-indigo-600" size={20} />}
+                </div>
+                <div className="text-xs text-gray-500 mt-1">{t.pointsSuffix}</div>
+                <div className="text-sm font-semibold text-gray-800 mt-2">
+                  {formatVnd(plan.amountVnd)}
+                </div>
+              </button>
+            );
+          })}
         </div>
 
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4 text-sm text-red-700">
+            {error}
+          </div>
+        )}
+
         <button
-          disabled
-          className="w-full bg-gray-300 text-gray-500 py-3 rounded-xl font-bold flex items-center justify-center space-x-2 cursor-not-allowed"
+          type="button"
+          disabled={!sepayEnabled || paying || !selectedPlan}
+          onClick={handlePay}
+          className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-xl font-bold flex items-center justify-center space-x-2 hover:from-indigo-700 hover:to-purple-700 transition-all disabled:from-gray-300 disabled:to-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
         >
-          <Zap size={20} />
-          <span>{t.depositBtn} {depositAmount} {t.pointsSuffix}</span>
+          {paying ? (
+            <>
+              <Loader2 size={20} className="animate-spin" />
+              <span>{t.paymentProcessing}</span>
+            </>
+          ) : (
+            <>
+              <CreditCard size={20} />
+              <span>
+                {t.payWithSePay}{" "}
+                {selectedPlan
+                  ? `— ${selectedPlan.points.toLocaleString()} ${t.pointsSuffix} (${formatVnd(selectedPlan.amountVnd)})`
+                  : ""}
+              </span>
+            </>
+          )}
         </button>
-        <p className="text-xs text-gray-500 mt-2">{t.depositOnCreate}</p>
+
+        <div className="bg-indigo-50 rounded-lg p-3 mt-4">
+          <p className="text-xs text-indigo-900">{t.depositNote}</p>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl p-5 shadow-md border border-gray-200">
@@ -98,7 +180,7 @@ export function DepositPoints() {
 
         <div className="space-y-3">
           {stats.recentTransactions.length === 0 ? (
-            <p className="text-sm text-gray-500 text-center py-4">No transactions yet</p>
+            <p className="text-sm text-gray-500 text-center py-4">{t.noTransactions}</p>
           ) : (
             stats.recentTransactions.map((transaction) => (
               <div
@@ -106,14 +188,16 @@ export function DepositPoints() {
                 className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
               >
                 <div className="flex items-center space-x-3">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                    transaction.type === "reclaim"
-                      ? "bg-green-100"
-                      : transaction.type === "loss"
-                      ? "bg-red-100"
-                      : "bg-blue-100"
-                  }`}>
-                    {transaction.type === "reclaim" ? (
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                      transaction.type === "reclaim" || transaction.type === "topup"
+                        ? "bg-green-100"
+                        : transaction.type === "loss"
+                        ? "bg-red-100"
+                        : "bg-blue-100"
+                    }`}
+                  >
+                    {transaction.type === "reclaim" || transaction.type === "topup" ? (
                       <TrendingUp className="text-green-600" size={20} />
                     ) : transaction.type === "loss" ? (
                       <TrendingDown className="text-red-600" size={20} />
@@ -122,20 +206,25 @@ export function DepositPoints() {
                     )}
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-gray-900">{transaction.task}</p>
+                    <p className="text-sm font-semibold text-gray-900">
+                      {transaction.type === "topup" ? t.topupLabel : transaction.task}
+                    </p>
                     <p className="text-xs text-gray-500">
                       {new Date(transaction.date).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
-                <span className={`font-bold ${
-                  transaction.type === "reclaim"
-                    ? "text-green-600"
-                    : transaction.type === "loss"
-                    ? "text-red-600"
-                    : "text-blue-600"
-                }`}>
-                  {transaction.type === "reclaim" ? "+" : "-"}{transaction.amount}
+                <span
+                  className={`font-bold ${
+                    transaction.type === "reclaim" || transaction.type === "topup"
+                      ? "text-green-600"
+                      : transaction.type === "loss"
+                      ? "text-red-600"
+                      : "text-blue-600"
+                  }`}
+                >
+                  {transaction.type === "reclaim" || transaction.type === "topup" ? "+" : "-"}
+                  {transaction.amount.toLocaleString()}
                 </span>
               </div>
             ))

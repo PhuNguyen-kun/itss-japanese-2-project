@@ -6,11 +6,15 @@ import {
   scheduleDeadlines,
 } from "./pointDistribution";
 
-const MODEL = "gemini-2.0-flash";
+const DEFAULT_MODEL = "gemini-2.5-flash";
 
 interface GeminiMilestone {
   title: string;
   description: string;
+}
+
+function getModelName(): string {
+  return process.env.GEMINI_MODEL?.trim() || DEFAULT_MODEL;
 }
 
 function getClient() {
@@ -19,106 +23,166 @@ function getClient() {
   return new GoogleGenerativeAI(apiKey);
 }
 
+function getModel() {
+  return getClient().getGenerativeModel({
+    model: getModelName(),
+    generationConfig: {
+      responseMimeType: "application/json",
+      temperature: 0.4,
+    },
+  });
+}
+
 function parseJsonFromText(text: string): unknown {
-  const cleaned = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
-  return JSON.parse(cleaned);
+  const cleaned = text
+    .replace(/```json\n?/gi, "")
+    .replace(/```\n?/g, "")
+    .trim();
+
+  try {
+    return JSON.parse(cleaned);
+  } catch {
+    const match = cleaned.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error("Gemini response is not valid JSON");
+    return JSON.parse(match[0]);
+  }
+}
+
+function pdfContentParts(pdfBase64List: string[]) {
+  return pdfBase64List.map((data) => ({
+    inlineData: { mimeType: "application/pdf" as const, data },
+  }));
 }
 
 export async function generateMilestonesFromPdf(
-  pdfBase64: string,
+  pdfBase64List: string[],
   subject: string,
   difficulty: number,
-  milestoneCount: number
+  milestoneCount: number,
+  finalDeadline: Date
 ): Promise<GeminiMilestone[]> {
-  const genAI = getClient();
-  const model = genAI.getGenerativeModel({ model: MODEL });
+  const model = getModel();
+  const docCount = pdfBase64List.length;
 
-  const prompt = `You are an academic planning assistant. Analyze this lecture PDF for the course "${subject}".
-The subject difficulty level is ${difficulty}/5 (1=easiest, 5=hardest).
+  const prompt = `You are an academic planning assistant. Analyze ALL ${docCount} attached lecture PDF document(s) for the course "${subject}".
 
-Break the material into exactly ${milestoneCount} sequential study milestones a student must complete before their final assignment deadline.
-Each milestone should map to concrete sections/topics from the PDF.
+Context:
+- Subject difficulty: ${difficulty}/5 (1 = introductory, 5 = very advanced)
+- Number of milestones required: exactly ${milestoneCount}
+- Final assignment deadline: ${finalDeadline.toISOString().split("T")[0]}
 
-Return ONLY valid JSON in this exact shape (no markdown):
+Task:
+Using content from ALL attached documents, break the material into exactly ${milestoneCount} sequential study milestones a student must complete BEFORE the final deadline.
+Each milestone MUST reference specific topics, chapters, sections, or concepts found in the PDFs (not generic study advice).
+Order milestones from foundational topics to advanced topics.
+Write titles and descriptions in the same language as the PDFs (Vietnamese if the PDFs are Vietnamese).
+
+For each milestone "description":
+- Write 3–6 bullet points, each on its own line separated by \\n (newline character)
+- Each line is one focused study objective with PDF references (e.g. "Bài 1, trang 8-12: ...")
+- Keep each line concise (under 150 characters)
+- Do NOT write one long paragraph
+
+Return JSON only:
 {
   "milestones": [
-    { "title": "Short milestone title", "description": "What the student should accomplish" }
+    { "title": "...", "description": "..." }
   ]
 }`;
 
   const result = await model.generateContent([
-    { inlineData: { mimeType: "application/pdf", data: pdfBase64 } },
+    ...pdfContentParts(pdfBase64List),
     { text: prompt },
   ]);
 
   const text = result.response.text();
-  const parsed = parseJsonFromText(text) as { milestones: GeminiMilestone[] };
+  const parsed = parseJsonFromText(text) as { milestones?: GeminiMilestone[] };
 
   if (!parsed.milestones?.length) {
     throw new Error("Gemini returned no milestones");
   }
 
-  return parsed.milestones.slice(0, milestoneCount);
+  if (parsed.milestones.length !== milestoneCount) {
+    throw new Error(
+      `Gemini returned ${parsed.milestones.length} milestones, expected ${milestoneCount}`
+    );
+  }
+
+  return parsed.milestones.map((m) => ({
+    ...m,
+    description: normalizeDescription(m.description),
+  }));
+}
+
+function normalizeDescription(description: string): string {
+  const trimmed = description.trim();
+  if (trimmed.includes("\n")) return trimmed;
+  return trimmed
+    .split(/(?<=[.!?])\s+/)
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .join("\n");
 }
 
 export async function generateQuizQuestions(
-  pdfBase64: string,
+  pdfBase64List: string[],
   subject: string,
   taskTitle: string,
   taskDescription: string
 ): Promise<{ id: number; question: string; options: string[]; correctIndex: number }[]> {
-  const genAI = getClient();
-  const model = genAI.getGenerativeModel({ model: MODEL });
+  const model = getModel();
+  const docCount = pdfBase64List.length;
 
-  const prompt = `Based on this lecture PDF for "${subject}", create exactly 10 multiple-choice quiz questions to verify the student understood the milestone: "${taskTitle}" — ${taskDescription}.
+  const prompt = `Based on ALL ${docCount} attached lecture PDF(s) for "${subject}", create exactly 10 multiple-choice quiz questions to verify the student understood this milestone:
 
-Each question must have exactly 4 options with one correct answer.
+Title: ${taskTitle}
+Description: ${taskDescription}
 
-Return ONLY valid JSON (no markdown):
+Rules:
+- Questions must test content from the PDF related to this milestone
+- Each question has exactly 4 options and one correct answer (correctIndex 0-3)
+- Use the same language as the PDF
+- For ALL mathematical expressions, use LaTeX wrapped in dollar signs $...$
+  Examples: $\\sum_{n=1}^{\\infty} \\frac{1}{n(n+1)}$ , $\\int_0^1 x^2\\,dx$ , $\\lim_{x \\to 0} \\frac{\\sin x}{x}$
+- Do NOT use Unicode subscripts like Σ_{n=1}^{∞} — always use LaTeX inside $...$
+
+Return JSON only:
 {
   "questions": [
-    {
-      "id": 1,
-      "question": "...",
-      "options": ["A", "B", "C", "D"],
-      "correctIndex": 0
-    }
+    { "id": 1, "question": "...", "options": ["...", "...", "...", "..."], "correctIndex": 0 }
   ]
 }`;
 
   const result = await model.generateContent([
-    { inlineData: { mimeType: "application/pdf", data: pdfBase64 } },
+    ...pdfContentParts(pdfBase64List),
     { text: prompt },
   ]);
 
   const text = result.response.text();
   const parsed = parseJsonFromText(text) as {
-    questions: { id: number; question: string; options: string[]; correctIndex: number }[];
+    questions?: { id: number; question: string; options: string[]; correctIndex: number }[];
   };
 
-  return parsed.questions.slice(0, 10).map((q, i) => ({ ...q, id: i + 1 }));
-}
+  if (!parsed.questions?.length) {
+    throw new Error("Gemini returned no quiz questions");
+  }
 
-/** Fallback milestones when Gemini fails */
-function fallbackMilestones(subject: string, count: number): GeminiMilestone[] {
-  const templates = [
-    { title: "Initial Research & Planning", description: `Review core concepts for ${subject}` },
-    { title: "Core Content Study", description: "Study main chapters and take notes" },
-    { title: "Practice & Application", description: "Apply concepts through exercises" },
-    { title: "Draft & Review", description: "Draft work and self-review" },
-    { title: "Deep Dive Analysis", description: "Analyze advanced topics in depth" },
-    { title: "Integration Phase", description: "Connect ideas across modules" },
-    { title: "Revision Round", description: "Revise weak areas identified" },
-    { title: "Final Preparation", description: "Final review before submission" },
-  ];
-  return templates.slice(0, count);
+  if (parsed.questions.length < 10) {
+    throw new Error(`Gemini returned ${parsed.questions.length} questions, expected 10`);
+  }
+
+  return parsed.questions.slice(0, 10).map((q, i) => ({
+    id: i + 1,
+    question: q.question,
+    options: q.options,
+    correctIndex: q.correctIndex,
+  }));
 }
 
 export function buildTasksFromMilestones(
   milestones: GeminiMilestone[],
   finalDeadline: Date,
-  depositPoints: number,
-  difficulty: number
+  depositPoints: number
 ): Milestone[] {
   const count = milestones.length;
   const pointValues = distributePoints(depositPoints, count);
@@ -142,7 +206,7 @@ export function buildTasksFromMilestones(
 }
 
 export async function generateRoadmapWithGemini(params: {
-  pdfBase64: string;
+  pdfBase64List: string[];
   subject: string;
   finalDeadline: Date;
   difficulty: number;
@@ -150,28 +214,18 @@ export async function generateRoadmapWithGemini(params: {
 }): Promise<Milestone[]> {
   const milestoneCount = difficultyToMilestoneCount(params.difficulty);
 
-  let milestones: GeminiMilestone[];
-  try {
-    milestones = await generateMilestonesFromPdf(
-      params.pdfBase64,
-      params.subject,
-      params.difficulty,
-      milestoneCount
-    );
-  } catch {
-    milestones = fallbackMilestones(params.subject, milestoneCount);
-  }
-
-  if (milestones.length < milestoneCount) {
-    const extras = fallbackMilestones(params.subject, milestoneCount - milestones.length);
-    milestones = [...milestones, ...extras].slice(0, milestoneCount);
-  }
+  const milestones = await generateMilestonesFromPdf(
+    params.pdfBase64List,
+    params.subject,
+    params.difficulty,
+    milestoneCount,
+    params.finalDeadline
+  );
 
   return buildTasksFromMilestones(
     milestones,
     params.finalDeadline,
-    params.depositPoints,
-    params.difficulty
+    params.depositPoints
   );
 }
 

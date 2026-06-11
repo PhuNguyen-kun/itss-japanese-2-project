@@ -17,7 +17,7 @@ export function CreateAssignment() {
     difficulty: 3,
     depositPoints: 1000,
   });
-  const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [pdfFiles, setPdfFiles] = useState<File[]>([]);
   const [balance, setBalance] = useState(2500);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState("");
@@ -28,7 +28,7 @@ export function CreateAssignment() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!pdfFile) {
+    if (!pdfFiles.length) {
       setError(t.lectureRequired);
       return;
     }
@@ -46,7 +46,7 @@ export function CreateAssignment() {
       fd.set("finalDeadline", formData.finalDeadline);
       fd.set("difficulty", String(formData.difficulty));
       fd.set("depositPoints", String(formData.depositPoints));
-      fd.set("lecturePdf", pdfFile);
+      pdfFiles.forEach((file) => fd.append("lecturePdfs", file));
 
       const assignment = await createAssignment(fd);
       router.push(`/roadmap/${assignment.id}`);
@@ -102,7 +102,7 @@ export function CreateAssignment() {
                 </div>
               </div>
 
-              <LectureUpload file={pdfFile} onChange={setPdfFile} />
+              <LectureUpload files={pdfFiles} onChange={setPdfFiles} />
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-3">
@@ -163,7 +163,7 @@ export function CreateAssignment() {
 
               <button
                 type="submit"
-                disabled={isGenerating || !pdfFile}
+                disabled={isGenerating || !pdfFiles.length}
                 className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 rounded-lg font-bold text-lg flex items-center justify-center space-x-2 hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isGenerating ? (

@@ -140,6 +140,21 @@ const translations = {
     recentActivity: "Recent Activity",
     lossAversionPsych: "Loss Aversion Psychology",
     lossAversionPsychDesc: "Research shows people are 2x more motivated to avoid losses than gain rewards. Your deposited points create real commitment!",
+    conversionRate: "100 ₫ = 1 point. Pay via SePay (bank transfer QR).",
+    selectPackage: "Select a package",
+    payWithSePay: "Pay with SePay",
+    paymentProcessing: "Redirecting to SePay...",
+    paymentSuccess: "Payment successful!",
+    paymentError: "Payment failed",
+    paymentErrorDesc: "Payment was cancelled or failed. No points were added.",
+    paymentVerifying: "Verifying payment...",
+    paymentPendingTitle: "Payment processing",
+    paymentPendingDesc: "Your payment is being confirmed. Points will appear shortly after SePay notifies us.",
+    backToWallet: "Back to Point Vault",
+    sepayNotConfigured: "SePay is not configured. Add SEPAY_MERCHANT_ID and SEPAY_SECRET_KEY to .env",
+    topupLabel: "Top-up via SePay",
+    noTransactions: "No transactions yet",
+    loading: "Loading...",
 
     // Social
     socialTitle: "Social Progress",
@@ -193,8 +208,9 @@ const translations = {
 
     // New MVP strings
     lectureUpload: "Lecture Material (PDF)",
-    lectureUploadHint: "Click to upload lecture PDF",
-    lectureUploadSub: "AI will analyze this to generate your roadmap",
+    lectureUploadHint: "Click to add lecture PDFs (multiple allowed)",
+    lectureUploadSub: "Upload all course materials — no file limit. AI analyzes every document.",
+    lectureFilesCount: "files",
     lectureRequired: "Please upload a lecture PDF",
     insufficientBalance: "Insufficient points in wallet",
     timelineForfeited: "forfeited",
@@ -208,6 +224,10 @@ const translations = {
     generatingQuiz: "Generating quiz with AI...",
     answerAllQuestions: "Please answer all 10 questions",
     depositOnCreate: "Points are deposited when creating a new assignment",
+    uploading: "Uploading...",
+    regenerateQuiz: "Regenerate quiz",
+    quizHistory: "Quiz History",
+    answersSaved: "Answers",
   },
   vi: {
     // Layout / Sidebar
@@ -344,6 +364,21 @@ const translations = {
     recentActivity: "Hoạt Động Gần Đây",
     lossAversionPsych: "Tâm Lý Học Né Tránh Tổn Thất",
     lossAversionPsychDesc: "Nghiên cứu cho thấy người ta có động lực gấp 2 lần để tránh mất mát hơn là nhận phần thưởng. Điểm gửi tạo ra cam kết thực sự!",
+    conversionRate: "100 ₫ = 1 điểm. Thanh toán qua SePay (QR chuyển khoản).",
+    selectPackage: "Chọn gói nạp",
+    payWithSePay: "Thanh toán",
+    paymentProcessing: "Đang chuyển tới SePay...",
+    paymentSuccess: "Thanh toán thành công!",
+    paymentError: "Thanh toán thất bại",
+    paymentErrorDesc: "Thanh toán bị hủy hoặc thất bại. Không có điểm nào được cộng.",
+    paymentVerifying: "Đang xác minh thanh toán...",
+    paymentPendingTitle: "Đang xử lý thanh toán",
+    paymentPendingDesc: "Thanh toán đang được xác nhận. Điểm sẽ được cộng sau khi SePay gửi thông báo.",
+    backToWallet: "Về Kho Điểm",
+    sepayNotConfigured: "SePay chưa được cấu hình. Thêm SEPAY_MERCHANT_ID và SEPAY_SECRET_KEY vào .env",
+    topupLabel: "Nạp qua SePay",
+    noTransactions: "Chưa có giao dịch",
+    loading: "Đang tải...",
 
     // Social
     socialTitle: "Tiến Độ Xã Hội",
@@ -396,8 +431,9 @@ const translations = {
     pointDistPsych: "📈 Thiết Kế Hành Vi: Rủi ro tăng dần để phản ánh áp lực hạn chót thực tế.",
 
     lectureUpload: "Tài Liệu Bài Giảng (PDF)",
-    lectureUploadHint: "Nhấn để tải PDF bài giảng",
-    lectureUploadSub: "AI sẽ phân tích để tạo lộ trình học",
+    lectureUploadHint: "Nhấn để thêm PDF bài giảng (nhiều file)",
+    lectureUploadSub: "Tải toàn bộ tài liệu môn học — không giới hạn số file. AI phân tích tất cả.",
+    lectureFilesCount: "file",
     lectureRequired: "Vui lòng tải PDF bài giảng",
     insufficientBalance: "Không đủ điểm trong ví",
     timelineForfeited: "đã mất",
@@ -411,6 +447,10 @@ const translations = {
     generatingQuiz: "Đang tạo quiz bằng AI...",
     answerAllQuestions: "Vui lòng trả lời đủ 10 câu",
     depositOnCreate: "Điểm được cọc khi tạo bài tập mới",
+    uploading: "Đang tải lên...",
+    regenerateQuiz: "Tạo lại quiz",
+    quizHistory: "Lịch Sử Quiz",
+    answersSaved: "Đáp án",
   },
 };
 
@@ -426,7 +466,7 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | null>(null);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguage] = useState<Language>("en");
+  const [language, setLanguage] = useState<Language>("vi");
 
   const t = translations[language];
 

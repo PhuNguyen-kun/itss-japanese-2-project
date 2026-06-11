@@ -4,6 +4,8 @@ import Link from "next/link";
 import { CheckCircle2, Circle, Clock, TrendingDown, Lock, XCircle } from "lucide-react";
 import type { Milestone } from "@/lib/types";
 import { useLanguage } from "@/context/LanguageContext";
+import { formatTimeRemaining, formatDeadlineDateTime } from "@/lib/timeFormat";
+import { TaskDescription } from "./TaskDescription";
 
 interface RoadmapTimelineProps {
   tasks: Milestone[];
@@ -14,14 +16,7 @@ export function RoadmapTimeline({ tasks, assignmentId }: RoadmapTimelineProps) {
   const { t } = useLanguage();
 
   const getTimeRemaining = (deadline: Date) => {
-    const now = new Date();
-    const diff = deadline.getTime() - now.getTime();
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-
-    if (hours < 0) return { text: t.overdue, urgent: true };
-    if (hours < 24) return { text: `${hours}${t.hoursLeft}`, urgent: true };
-    const days = Math.floor(hours / 24);
-    return { text: `${days}${t.daysLeft} ${hours % 24}h`, urgent: hours < 72 };
+    return formatTimeRemaining(deadline, t.overdue);
   };
 
   const getStatusLabel = (status: string) => {
@@ -97,7 +92,9 @@ export function RoadmapTimeline({ tasks, assignmentId }: RoadmapTimelineProps) {
                         {getStatusLabel(task.status)}
                       </span>
                     </div>
-                    <p className="text-gray-600 mb-4">{task.description}</p>
+                    <div className="mb-4">
+                      <TaskDescription text={task.description} />
+                    </div>
 
                     <div className="flex items-center space-x-6">
                       <div className="flex items-center space-x-2">
@@ -132,7 +129,7 @@ export function RoadmapTimeline({ tasks, assignmentId }: RoadmapTimelineProps) {
                       <div>
                         <div className="text-xs text-gray-500">{t.due}</div>
                         <div className="font-semibold text-gray-700">
-                          {task.deadline.toLocaleDateString()} {task.deadline.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                          {formatDeadlineDateTime(task.deadline)}
                         </div>
                       </div>
                     </div>

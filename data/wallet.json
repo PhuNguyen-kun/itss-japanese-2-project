@@ -1,8 +1,36 @@
 {
-  "balance": 1500,
+  "balance": 4350,
   "lost": 1470,
   "reclaimed": 0,
   "transactions": [
+    {
+      "id": 11,
+      "type": "topup",
+      "task": "SePay TC-1781136393678-QKHHXY",
+      "amount": 100,
+      "date": "2026-06-11T00:06:49.953Z"
+    },
+    {
+      "id": 10,
+      "type": "topup",
+      "task": "SePay TC-1781136107653-1L44W5",
+      "amount": 250,
+      "date": "2026-06-11T00:05:56.798Z"
+    },
+    {
+      "id": 9,
+      "type": "deposit",
+      "task": "Xây dựng chương trình dịch",
+      "amount": 1000,
+      "date": "2026-06-10T23:32:22.010Z"
+    },
+    {
+      "id": 8,
+      "type": "deposit",
+      "task": "Giải tích 3",
+      "amount": 1000,
+      "date": "2026-06-10T23:12:11.058Z"
+    },
     {
       "id": 7,
       "type": "deposit",

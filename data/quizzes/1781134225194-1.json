@@ -1,0 +1,117 @@
+{
+  "assignmentId": 1781134225194,
+  "taskId": 1,
+  "questions": [
+    {
+      "id": 1,
+      "question": "Nội dung nào sau đây KHÔNG phải là một chủ đề được nghiên cứu trong môn học \"Xây dựng chương trình dịch\"?",
+      "options": [
+        "Cách thức làm việc của bộ xử lý ngôn ngữ và chương trình dịch.",
+        "Sinh mã máy cho những cấu trúc ngôn ngữ cụ thể.",
+        "Thiết kế ngôn ngữ: Cú pháp và ngữ nghĩa.",
+        "Tối ưu hóa thuật toán trên phần cứng chuyên dụng."
+      ],
+      "correctIndex": 3
+    },
+    {
+      "id": 2,
+      "question": "Đặc trưng nào sau đây là của ngôn ngữ lập trình cấp cao?",
+      "options": [
+        "Độc lập với máy tính.",
+        "Gần với ngôn ngữ máy.",
+        "Chương trình thực hiện chậm hơn.",
+        "Chương trình khó đọc, viết và bảo trì."
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": 3,
+      "question": "Trong ngôn ngữ lập trình, \"Cú pháp\" (Syntax) đề cập đến điều gì?",
+      "options": [
+        "Ý nghĩa và hiệu quả của các cấu trúc ngôn ngữ.",
+        "Chính tả và văn phạm của các cấu trúc ngôn ngữ.",
+        "Cách thức chương trình tương tác với hệ điều hành.",
+        "Các quy tắc về kiểu dữ liệu và phạm vi biến."
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": 4,
+      "question": "Đâu là chức năng chính của một \"Interpreter\" (Trình thông dịch)?",
+      "options": [
+        "Dịch từ ngôn ngữ nguồn sang mã máy.",
+        "Dịch từ Assembly sang mã máy.",
+        "Dịch và thực thi trực tiếp từng thao tác của chương trình nguồn dựa trên dữ liệu do người sử dụng cung cấp.",
+        "Sinh ra các compiler khác."
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": 5,
+      "question": "Pha nào trong trình biên dịch có nhiệm vụ \"Lần lượt xem xét từng ký tự của chương trình nguồn, phân nhóm chúng thành những đơn vị cú pháp gọi là từ tố (token)\"?",
+      "options": [
+        "Phân tích cú pháp (Syntax Analysis).",
+        "Phân tích ngữ nghĩa (Semantic Analysis).",
+        "Phân tích từ vựng (Lexical Analysis).",
+        "Sinh mã trung gian (Intermediate Code Generation)."
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": 6,
+      "question": "Mục đích chính của pha \"Sinh mã trung gian\" (Intermediate Code Generation) trong trình biên dịch là gì?",
+      "options": [
+        "Sinh ra các lệnh máy để thực hiện thao tác.",
+        "Làm cho chương trình hiệu quả hơn bằng cách tối ưu mã.",
+        "Chuyển chương trình nguồn sang một chương trình tương đương trong ngôn ngữ trung gian, không phụ thuộc máy và dễ tối ưu.",
+        "Kiểm tra xem dãy token có đúng cú pháp không."
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": 7,
+      "question": "Trong định nghĩa hình thức của văn phạm $G = (\\Sigma, \\Delta, P, S)$, $\\Sigma$ đại diện cho điều gì?",
+      "options": [
+        "Tập hữu hạn các ký hiệu không kết thúc.",
+        "Tập hữu hạn các ký hiệu kết thúc.",
+        "Ký hiệu đầu.",
+        "Tập hữu hạn các sản xuất."
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": 8,
+      "question": "Trong lý thuyết ngôn ngữ, \"Xâu\" (string) được định nghĩa là gì?",
+      "options": [
+        "Một tập hợp các ký hiệu không kết thúc.",
+        "Một tập hợp các ký hiệu kết thúc.",
+        "Dãy hữu hạn các ký hiệu ghép liền với nhau.",
+        "Một mô hình cho tất cả các ngôn ngữ."
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": 9,
+      "question": "Trong ký pháp BNF, các luật được định nghĩa bằng dạng $N ::= s$. $N$ và $s$ đại diện cho điều gì?",
+      "options": [
+        "$N$ là ký hiệu kết thúc, $s$ là xâu gồm các ký hiệu kết thúc.",
+        "$N$ là ký hiệu không kết thúc, $s$ là xâu gồm các ký hiệu không kết thúc.",
+        "$N$ là ký hiệu không kết thúc, $s$ là xâu gồm $0$ hay nhiều ký hiệu kết thúc và không kết thúc.",
+        "$N$ là ký hiệu đầu, $s$ là xâu gồm các ký hiệu bất kỳ."
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": 10,
+      "question": "Điểm khác biệt chính giữa EBNF (Extended BNF) và BNF là gì?",
+      "options": [
+        "EBNF chỉ sử dụng ký hiệu không kết thúc, còn BNF sử dụng cả hai.",
+        "EBNF cho phép sử dụng các ký hiệu đặc biệt như `[]` (tùy chọn) và `{}` (lặp lại tùy ý) để đơn giản hóa mô tả văn phạm.",
+        "BNF hỗ trợ mô tả các ngôn ngữ lập trình phức tạp hơn EBNF.",
+        "EBNF yêu cầu phải dùng dấu nháy kép `\"\"` cho ký hiệu kết thúc, còn BNF thì không."
+      ],
+      "correctIndex": 1
+    }
+  ],
+  "createdAt": "2026-06-10T23:35:41.514Z"
+}

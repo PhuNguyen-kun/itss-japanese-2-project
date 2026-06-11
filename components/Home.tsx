@@ -6,6 +6,7 @@ import { Clock, TrendingDown, TrendingUp, AlertCircle, CheckCircle2, Calendar, Z
 import { getAssignments, getWalletStats } from "@/lib/api-client";
 import { useState, useEffect } from "react";
 import { useLanguage } from "@/context/LanguageContext";
+import { formatTimeRemaining } from "@/lib/timeFormat";
 import type { Assignment } from "@/lib/types";
 
 export function Home() {
@@ -48,15 +49,7 @@ export function Home() {
   ).length;
 
   const getTimeRemaining = (deadline: Date) => {
-    const now = new Date();
-    const diff = deadline.getTime() - now.getTime();
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
-    if (hours < 0) return t.overdue;
-    if (hours < 24) return `${hours}h ${minutes}m`;
-    const days = Math.floor(hours / 24);
-    return `${days}d ${hours % 24}h`;
+    return formatTimeRemaining(deadline, t.overdue).text;
   };
 
   const getUrgencyLevel = (deadline: Date) => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
   CheckCircle2,
@@ -11,14 +11,22 @@ import {
   Sparkles,
   Upload,
   FileText,
+  History,
 } from "lucide-react";
 import {
   getAssignment,
+  getTaskProgress,
+  uploadTaskNotes,
+  saveQuizAnswers,
   generateQuiz,
   completeTaskRequest,
   type QuizQuestionClient,
+  type TaskProgressClient,
 } from "@/lib/api-client";
 import { useLanguage } from "@/context/LanguageContext";
+import { formatTimeRemaining } from "@/lib/timeFormat";
+import { TaskDescription } from "./TaskDescription";
+import { MathText } from "./MathText";
 import type { Assignment, Milestone } from "@/lib/types";
 
 interface TaskCompleteProps {
@@ -31,43 +39,76 @@ export function TaskComplete({ assignmentId, taskId }: TaskCompleteProps) {
   const { t } = useLanguage();
   const [assignment, setAssignment] = useState<Assignment | null>(null);
   const [task, setTask] = useState<Milestone | null>(null);
-  const [notes, setNotes] = useState<File[]>([]);
+  const [progress, setProgress] = useState<TaskProgressClient | null>(null);
   const [questions, setQuestions] = useState<QuizQuestionClient[]>([]);
   const [answers, setAnswers] = useState<number[]>([]);
   const [quizStarted, setQuizStarted] = useState(false);
   const [loadingQuiz, setLoadingQuiz] = useState(false);
+  const [uploadingNotes, setUploadingNotes] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const aid = parseInt(assignmentId, 10);
+  const tid = parseInt(taskId, 10);
 
   useEffect(() => {
-    getAssignment(parseInt(assignmentId, 10)).then((a) => {
+    Promise.all([getAssignment(aid), getTaskProgress(aid, tid)]).then(([a, p]) => {
       if (!a) return;
       setAssignment(a);
-      const found = a.tasks.find((t) => t.id === parseInt(taskId, 10));
+      const found = a.tasks.find((t) => t.id === tid);
       setTask(found ?? null);
+      setProgress(p);
+
+      if (p.quiz?.questions?.length) {
+        setQuestions(p.quiz.questions);
+        setAnswers(p.quiz.answers ?? new Array(p.quiz.questions.length).fill(-1));
+        setQuizStarted(true);
+      }
     });
-  }, [assignmentId, taskId]);
+  }, [assignmentId, taskId, aid, tid]);
+
+  const persistAnswers = useCallback(
+    (next: number[]) => {
+      if (saveTimer.current) clearTimeout(saveTimer.current);
+      saveTimer.current = setTimeout(() => {
+        saveQuizAnswers(aid, tid, next).catch(console.error);
+      }, 400);
+    },
+    [aid, tid]
+  );
+
+  const handleAnswerChange = (qi: number, oi: number) => {
+    const next = [...answers];
+    next[qi] = oi;
+    setAnswers(next);
+    persistAnswers(next);
+  };
+
+  const handleNotesUpload = async (files: FileList | null) => {
+    if (!files?.length) return;
+    setUploadingNotes(true);
+    setError("");
+    try {
+      const updated = await uploadTaskNotes(aid, tid, Array.from(files));
+      setProgress(updated);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploadingNotes(false);
+    }
+  };
 
   if (!task || !assignment) {
     return <div className="p-8 text-gray-500">Loading...</div>;
   }
 
-  const getTimeRemaining = (deadline: Date) => {
-    const now = new Date();
-    const diff = deadline.getTime() - now.getTime();
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    if (hours < 0) return { text: t.overdue, color: "text-red-600" };
-    if (hours < 24) return { text: `${hours}h ${minutes}m remaining`, color: "text-red-600" };
-    const days = Math.floor(hours / 24);
-    return { text: `${days}d ${hours % 24}h remaining`, color: "text-orange-600" };
-  };
+  const isCompleted = task.status === "completed" || !!progress?.completedAt;
+  const timeInfo = formatTimeRemaining(task.deadline, t.overdue);
+  const canTakeQuiz = (progress?.notes.length ?? 0) > 0;
 
-  const timeInfo = getTimeRemaining(task.deadline);
-  const canTakeQuiz = notes.length > 0;
-
-  const handleStartQuiz = async () => {
+  const handleStartQuiz = async (regenerate = false) => {
     if (!canTakeQuiz) {
       setError(t.noteRequired);
       return;
@@ -75,10 +116,12 @@ export function TaskComplete({ assignmentId, taskId }: TaskCompleteProps) {
     setError("");
     setLoadingQuiz(true);
     try {
-      const { questions: qs } = await generateQuiz(assignment.id, task.id);
-      setQuestions(qs);
-      setAnswers(new Array(qs.length).fill(-1));
+      const result = await generateQuiz(aid, tid, regenerate);
+      setQuestions(result.questions);
+      setAnswers(result.answers ?? new Array(result.questions.length).fill(-1));
       setQuizStarted(true);
+      const p = await getTaskProgress(aid, tid);
+      setProgress(p);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Quiz failed");
     } finally {
@@ -94,11 +137,13 @@ export function TaskComplete({ assignmentId, taskId }: TaskCompleteProps) {
     setError("");
     setSubmitting(true);
     try {
-      const result = await completeTaskRequest(assignment.id, task.id, notes, answers);
+      await completeTaskRequest(aid, tid, answers);
       setShowSuccess(true);
       setTimeout(() => router.push(`/roadmap/${assignment.id}`), 2000);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed");
+      const p = await getTaskProgress(aid, tid);
+      setProgress(p);
       setSubmitting(false);
     }
   };
@@ -151,43 +196,58 @@ export function TaskComplete({ assignmentId, taskId }: TaskCompleteProps) {
 
       <div className="bg-white rounded-xl p-5 shadow-md border border-gray-200">
         <h2 className="font-bold text-gray-900 mb-3">{t.description}</h2>
-        <p className="text-gray-700">{task.description}</p>
+        <TaskDescription text={task.description} />
       </div>
 
-      {/* Step 1: Upload notes */}
+      {/* Notes */}
       <div className="bg-white rounded-xl p-5 shadow-md border border-gray-200">
         <h2 className="font-bold text-gray-900 mb-3">{t.uploadNotes}</h2>
         <p className="text-sm text-gray-600 mb-4">{t.uploadNotesDesc}</p>
-        <label className="flex flex-col items-center border-2 border-dashed border-gray-300 rounded-xl p-6 cursor-pointer hover:border-indigo-400">
-          <Upload className="text-gray-400 mb-2" size={32} />
-          <span className="text-sm font-semibold text-gray-700">{t.uploadNotesBtn}</span>
-          <input
-            type="file"
-            multiple
-            className="hidden"
-            onChange={(e) => setNotes(Array.from(e.target.files ?? []))}
-          />
-        </label>
-        {notes.length > 0 && (
+
+        {!isCompleted && (
+          <label className="flex flex-col items-center border-2 border-dashed border-gray-300 rounded-xl p-6 cursor-pointer hover:border-indigo-400">
+            <Upload className="text-gray-400 mb-2" size={32} />
+            <span className="text-sm font-semibold text-gray-700">
+              {uploadingNotes ? t.uploading : t.uploadNotesBtn}
+            </span>
+            <input
+              type="file"
+              multiple
+              className="hidden"
+              disabled={uploadingNotes}
+              onChange={(e) => {
+                handleNotesUpload(e.target.files);
+                e.target.value = "";
+              }}
+            />
+          </label>
+        )}
+
+        {(progress?.notes.length ?? 0) > 0 && (
           <div className="mt-3 space-y-2">
-            {notes.map((f, i) => (
-              <div key={i} className="flex items-center space-x-2 text-sm text-gray-700">
-                <FileText size={16} className="text-indigo-600" />
-                <span>{f.name}</span>
+            {progress!.notes.map((n, i) => (
+              <div key={i} className="flex items-center justify-between text-sm text-gray-700 bg-gray-50 p-2 rounded-lg">
+                <div className="flex items-center space-x-2">
+                  <FileText size={16} className="text-indigo-600" />
+                  <span>{n.originalName}</span>
+                </div>
+                <span className="text-xs text-gray-400">
+                  {new Date(n.uploadedAt).toLocaleDateString()}
+                </span>
               </div>
             ))}
           </div>
         )}
       </div>
 
-      {/* Step 2: Quiz */}
+      {/* Quiz */}
       <div className="bg-white rounded-xl p-5 shadow-md border border-gray-200">
         <h2 className="font-bold text-gray-900 mb-2">{t.quizTitle}</h2>
         <p className="text-sm text-gray-600 mb-4">{t.quizDesc}</p>
 
-        {!quizStarted ? (
+        {!quizStarted && !isCompleted ? (
           <button
-            onClick={handleStartQuiz}
+            onClick={() => handleStartQuiz(false)}
             disabled={!canTakeQuiz || loadingQuiz}
             className="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold disabled:opacity-50"
           >
@@ -195,35 +255,48 @@ export function TaskComplete({ assignmentId, taskId }: TaskCompleteProps) {
           </button>
         ) : (
           <div className="space-y-6">
+            {quizStarted && !isCompleted && (
+              <button
+                onClick={() => handleStartQuiz(true)}
+                disabled={loadingQuiz}
+                className="text-sm text-indigo-600 hover:underline"
+              >
+                {t.regenerateQuiz}
+              </button>
+            )}
             {questions.map((q, qi) => (
               <div key={q.id} className="border-b border-gray-100 pb-4">
-                <p className="font-semibold text-gray-900 mb-3">
-                  {qi + 1}. {q.question}
-                </p>
+                <div className="font-semibold text-gray-900 mb-3">
+                  <span>{qi + 1}. </span>
+                  <MathText text={q.question} />
+                </div>
                 <div className="space-y-2">
-                  {q.options.map((opt, oi) => (
-                    <label
-                      key={oi}
-                      className={`flex items-center space-x-3 p-3 rounded-lg cursor-pointer border ${
-                        answers[qi] === oi
-                          ? "border-indigo-500 bg-indigo-50"
-                          : "border-gray-200 hover:bg-gray-50"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name={`q-${qi}`}
-                        checked={answers[qi] === oi}
-                        onChange={() => {
-                          const next = [...answers];
-                          next[qi] = oi;
-                          setAnswers(next);
-                        }}
-                        className="text-indigo-600"
-                      />
-                      <span className="text-sm text-gray-800">{opt}</span>
-                    </label>
-                  ))}
+                  {q.options.map((opt, oi) => {
+                    const selected = answers[qi] === oi;
+                    return (
+                      <label
+                        key={oi}
+                        className={`flex items-start space-x-3 p-3 rounded-lg border ${
+                          isCompleted
+                            ? "border-gray-200 bg-gray-50 cursor-default"
+                            : selected
+                            ? "border-indigo-500 bg-indigo-50 cursor-pointer"
+                            : "border-gray-200 hover:bg-gray-50 cursor-pointer"
+                        }`}
+                      >
+                        {!isCompleted && (
+                          <input
+                            type="radio"
+                            name={`q-${qi}`}
+                            checked={selected}
+                            onChange={() => handleAnswerChange(qi, oi)}
+                            className="text-indigo-600 mt-1"
+                          />
+                        )}
+                        <MathText text={opt} className="text-sm text-gray-800 flex-1" />
+                      </label>
+                    );
+                  })}
                 </div>
               </div>
             ))}
@@ -231,32 +304,65 @@ export function TaskComplete({ assignmentId, taskId }: TaskCompleteProps) {
         )}
       </div>
 
+      {/* History */}
+      {(progress?.history.length ?? 0) > 0 && (
+        <div className="bg-white rounded-xl p-5 shadow-md border border-gray-200">
+          <div className="flex items-center space-x-2 mb-4">
+            <History size={20} className="text-indigo-600" />
+            <h2 className="font-bold text-gray-900">{t.quizHistory}</h2>
+          </div>
+          <div className="space-y-3">
+            {progress!.history.map((h, i) => (
+              <div key={i} className="p-3 bg-gray-50 rounded-lg text-sm">
+                <div className="flex justify-between mb-1">
+                  <span className="font-semibold">
+                    {h.passed ? "✅" : "❌"} {h.correct}/10
+                  </span>
+                  <span className="text-gray-500">
+                    {new Date(h.submittedAt).toLocaleString()}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500">
+                  {t.answersSaved}: [{h.answers.join(", ")}]
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
           {error}
         </div>
       )}
 
-      <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-4 flex items-start space-x-3">
-        <AlertCircle className="text-amber-600 flex-shrink-0 mt-0.5" size={20} />
-        <div>
-          <p className="text-sm font-semibold text-amber-900">{t.warningPointLoss}</p>
-          <p className="text-xs text-amber-700 mt-1">
-            {t.warningDesc1} {task.pointsDeposited} {t.warningDesc2}
-          </p>
-        </div>
-      </div>
+      {!isCompleted && (
+        <>
+          <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-4 flex items-start space-x-3">
+            <AlertCircle className="text-amber-600 flex-shrink-0 mt-0.5" size={20} />
+            <div>
+              <p className="text-sm font-semibold text-amber-900">{t.warningPointLoss}</p>
+              <p className="text-xs text-amber-700 mt-1">
+                {t.warningDesc1} {task.pointsDeposited} {t.warningDesc2}
+              </p>
+            </div>
+          </div>
 
-      {quizStarted && (
-        <button
-          onClick={handleComplete}
-          disabled={submitting}
-          className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-4 rounded-xl font-bold text-lg flex items-center justify-center space-x-2 hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg disabled:opacity-50"
-        >
-          <CheckCircle2 size={24} />
-          <span>{t.completeTaskBtn} {task.pointsDeposited} {t.pointsSuffix}</span>
-          <Sparkles size={20} />
-        </button>
+          {quizStarted && (
+            <button
+              onClick={handleComplete}
+              disabled={submitting}
+              className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-4 rounded-xl font-bold text-lg flex items-center justify-center space-x-2 hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg disabled:opacity-50"
+            >
+              <CheckCircle2 size={24} />
+              <span>
+                {t.completeTaskBtn} {task.pointsDeposited} {t.pointsSuffix}
+              </span>
+              <Sparkles size={20} />
+            </button>
+          )}
+        </>
       )}
     </div>
   );

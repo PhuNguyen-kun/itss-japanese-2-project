@@ -2,13 +2,15 @@ import { NextResponse } from "next/server";
 import {
   getAllAssignments,
   saveAssignment,
-  saveLecturePdf,
-  readPdfBase64,
+  saveLecturePdfs,
+  readPdfsBase64,
 } from "@/lib/db";
 import { generateRoadmapWithGemini } from "@/lib/gemini";
 import { deductDeposit } from "@/lib/wallet";
 import { processOverdueTasks } from "@/lib/overdue";
 import { assignmentToDTO } from "@/lib/types";
+
+export const maxDuration = 120;
 
 export async function GET() {
   await processOverdueTasks();
@@ -23,10 +25,21 @@ export async function POST(request: Request) {
     const finalDeadline = formData.get("finalDeadline") as string;
     const difficulty = parseInt(formData.get("difficulty") as string, 10);
     const depositPoints = parseInt(formData.get("depositPoints") as string, 10);
-    const pdfFile = formData.get("lecturePdf") as File | null;
+    const pdfFiles = formData.getAll("lecturePdfs") as File[];
 
-    if (!subject || !finalDeadline || !pdfFile || !difficulty || !depositPoints) {
+    const validFiles = pdfFiles.filter((f) => f.size > 0);
+
+    if (!subject || !finalDeadline || !validFiles.length || !difficulty || !depositPoints) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+
+    for (const file of validFiles) {
+      if (file.type && file.type !== "application/pdf") {
+        return NextResponse.json(
+          { error: `"${file.name}" is not a PDF. All lecture files must be PDF.` },
+          { status: 400 }
+        );
+      }
     }
 
     if (difficulty < 1 || difficulty > 5) {
@@ -38,19 +51,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid deadline" }, { status: 400 });
     }
 
-    await deductDeposit(depositPoints, subject);
-
     const assignmentId = Date.now();
-    const pdfPath = await saveLecturePdf(assignmentId, pdfFile);
-    const pdfBase64 = await readPdfBase64(pdfPath);
+    const pdfPaths = await saveLecturePdfs(assignmentId, validFiles);
+    const pdfBase64List = await readPdfsBase64(pdfPaths);
 
     const tasks = await generateRoadmapWithGemini({
-      pdfBase64,
+      pdfBase64List,
       subject,
       finalDeadline: deadline,
       difficulty,
       depositPoints,
     });
+
+    await deductDeposit(depositPoints, subject);
 
     const assignment = {
       id: assignmentId,
@@ -60,7 +73,7 @@ export async function POST(request: Request) {
       difficulty,
       depositPoints,
       totalPoints: depositPoints,
-      lecturePdfPath: pdfPath,
+      lecturePdfPaths: pdfPaths,
       tasks,
       createdAt: new Date(),
     };
@@ -68,12 +81,23 @@ export async function POST(request: Request) {
     await saveAssignment(assignment);
     return NextResponse.json(assignmentToDTO(assignment), { status: 201 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to create assignment";
-    const status = message === "Insufficient balance" ? 400 : 500;
-    return NextResponse.json({ error: message }, { status });
-  }
-}
+    console.error("[POST /api/assignments] Gemini error:", error);
 
-export async function HEAD() {
-  return NextResponse.json({ ok: true });
+    const message =
+      error instanceof Error ? error.message : "Failed to create assignment";
+
+    const isGemini =
+      message.includes("Gemini") ||
+      message.includes("GoogleGenerativeAI") ||
+      message.includes("generativelanguage");
+
+    return NextResponse.json(
+      {
+        error: isGemini
+          ? `AI roadmap generation failed: ${message}. Check GEMINI_API_KEY and try again.`
+          : message,
+      },
+      { status: isGemini ? 502 : 500 }
+    );
+  }
 }
