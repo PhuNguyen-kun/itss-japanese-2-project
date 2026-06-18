@@ -220,6 +220,7 @@ export function Home() {
                   <TrendingUp size={16} />
                   <span className="text-xl font-bold">1,240</span>
                 </div>
+
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">{t.currentStreak}</span>

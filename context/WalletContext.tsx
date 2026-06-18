@@ -52,10 +52,8 @@ export function WalletProvider({
   }, []);
 
   useEffect(() => {
-    if (initialStats == null) {
-      void refreshWallet();
-    }
-  }, [initialStats, refreshWallet]);
+    void refreshWallet();
+  }, [refreshWallet]);
 
   const value: WalletContextValue = {
     stats,
