@@ -19,6 +19,7 @@ import {
 import { useWallet } from "@/context/WalletContext";
 import { submitSepayCheckout } from "@/lib/sepayCheckout";
 import { formatVnd } from "@/lib/paymentPlans";
+import { PageLoading } from "@/components/Loading";
 
 export function DepositPoints() {
   const { t } = useLanguage();
@@ -48,34 +49,34 @@ export function DepositPoints() {
   };
 
   if (!stats || !billing) {
-    return <div className="p-8 text-gray-500">{t.loading}</div>;
+    return <PageLoading variant="deposit" />;
   }
 
   const sepayEnabled = billing.sepay.enabled;
 
   return (
-    <div className="p-4 space-y-6">
-      <div className="pt-4">
-        <h1 className="text-2xl font-bold text-gray-900">{t.pointVault}</h1>
-        <p className="text-gray-600">{t.manageDeposits}</p>
+    <div className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6">
+      <div className="pt-2 sm:pt-4">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t.pointVault}</h1>
+        <p className="text-sm sm:text-base text-gray-600">{t.manageDeposits}</p>
       </div>
 
-      <div className="bg-gradient-to-br from-indigo-600 to-purple-700 text-white rounded-2xl p-6 shadow-xl">
+      <div className="bg-gradient-to-br from-indigo-600 to-purple-700 text-white rounded-2xl p-5 sm:p-6 shadow-xl">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm opacity-90">{t.totalBalance}</span>
           <Wallet size={24} />
         </div>
-        <div className="text-5xl font-bold mb-1">{stats.totalBalance.toLocaleString()}</div>
+        <div className="text-4xl sm:text-5xl font-bold mb-1">{stats.totalBalance.toLocaleString()}</div>
         <p className="text-sm opacity-90">{t.availablePoints}</p>
 
         <div className="grid grid-cols-2 gap-3 mt-5">
-          <div className="bg-white bg-opacity-20 rounded-xl p-3">
+          <div className="bg-white/20 rounded-xl p-3 text-white">
             <div className="text-2xl font-bold">{stats.deposited.toLocaleString()}</div>
-            <div className="text-xs opacity-90">{t.deposited}</div>
+            <div className="text-xs text-white/80">{t.deposited}</div>
           </div>
-          <div className="bg-white bg-opacity-20 rounded-xl p-3">
-            <div className="text-2xl font-bold text-orange-300">{stats.atRisk.toLocaleString()}</div>
-            <div className="text-xs opacity-90">{t.atRisk}</div>
+          <div className="bg-white/20 rounded-xl p-3 text-white">
+            <div className="text-2xl font-bold text-amber-300">{stats.atRisk.toLocaleString()}</div>
+            <div className="text-xs text-white/80">{t.atRisk}</div>
           </div>
         </div>
       </div>
@@ -104,7 +105,7 @@ export function DepositPoints() {
         )}
 
         <p className="text-sm font-semibold text-gray-700 mb-3">{t.selectPackage}</p>
-        <div className="grid grid-cols-2 gap-3 mb-5">
+        <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-4 sm:mb-5">
           {billing.plans.map((plan) => {
             const selected = plan.id === selectedPlanId;
             return (
@@ -113,7 +114,7 @@ export function DepositPoints() {
                 type="button"
                 disabled={!sepayEnabled || paying}
                 onClick={() => setSelectedPlanId(plan.id)}
-                className={`rounded-xl border-2 p-4 text-left transition-all ${
+                className={`rounded-xl border-2 p-3 sm:p-4 text-left transition-all ${
                   selected
                     ? "border-indigo-500 bg-indigo-50 ring-2 ring-indigo-200"
                     : "border-gray-200 hover:border-indigo-300"
@@ -144,7 +145,7 @@ export function DepositPoints() {
           type="button"
           disabled={!sepayEnabled || paying || !selectedPlan}
           onClick={handlePay}
-          className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-xl font-bold flex items-center justify-center space-x-2 hover:from-indigo-700 hover:to-purple-700 transition-all disabled:from-gray-300 disabled:to-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
+          className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:from-indigo-700 hover:to-purple-700 transition-all disabled:from-gray-300 disabled:to-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed text-sm sm:text-base"
         >
           {paying ? (
             <>
@@ -154,7 +155,7 @@ export function DepositPoints() {
           ) : (
             <>
               <CreditCard size={20} />
-              <span>
+              <span className="text-center leading-snug">
                 {t.payWithSePay}{" "}
                 {selectedPlan
                   ? `— ${selectedPlan.points.toLocaleString()} ${t.pointsSuffix} (${formatVnd(selectedPlan.amountVnd)})`
@@ -179,7 +180,7 @@ export function DepositPoints() {
             stats.recentTransactions.map((transaction) => (
               <div
                 key={transaction.id}
-                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-3 bg-gray-50 rounded-lg"
               >
                 <div className="flex items-center space-x-3">
                   <div

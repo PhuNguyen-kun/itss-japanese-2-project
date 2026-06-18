@@ -6,6 +6,7 @@ import { TrendingDown, TrendingUp, AlertTriangle, Calendar, ArrowLeft, Trash2, L
 import { deleteAssignment, getAssignment, getAssignments } from "@/lib/api-client";
 import { calculateAssignmentRefund, calculateForfeitedPoints } from "@/lib/assignmentUtils";
 import { RoadmapTimeline } from "./RoadmapTimeline";
+import { PageLoading } from "@/components/Loading";
 import { useLanguage } from "@/context/LanguageContext";
 import { useWallet } from "@/context/WalletContext";
 import type { Assignment } from "@/lib/types";
@@ -57,21 +58,21 @@ export function RoadmapView({ assignmentId }: RoadmapViewProps) {
 
   if (assignmentId === "all") {
     if (loading) {
-      return <div className="p-8 text-gray-500">{t.loading}</div>;
+      return <PageLoading variant="list" />;
     }
 
     const refundPreview = deleteTarget ? calculateAssignmentRefund(deleteTarget) : 0;
     const lostPreview = deleteTarget ? calculateForfeitedPoints(deleteTarget) : 0;
 
     return (
-      <div className="p-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t.allRoadmaps}</h1>
-          <p className="text-gray-600">{t.allRoadmapsSubtitle}</p>
+      <div className="p-4 sm:p-6 lg:p-8">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{t.allRoadmaps}</h1>
+          <p className="text-sm sm:text-base text-gray-600">{t.allRoadmapsSubtitle}</p>
         </div>
 
         {assignments.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-16 text-center">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 sm:p-16 text-center">
             <div className="text-6xl mb-4">🗺️</div>
             <p className="text-gray-500 mb-6">{t.noAssignments}</p>
             <button
@@ -82,7 +83,7 @@ export function RoadmapView({ assignmentId }: RoadmapViewProps) {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {assignments.map((assignment) => {
               const completed = assignment.tasks.filter((task) => task.status === "completed").length;
               const prog = (completed / assignment.tasks.length) * 100;
@@ -221,13 +222,13 @@ export function RoadmapView({ assignmentId }: RoadmapViewProps) {
   }
 
   if (loading) {
-    return <div className="p-8 text-gray-500">{t.loading}</div>;
+    return <PageLoading variant="detail" />;
   }
 
   if (!roadmap) {
     return (
-      <div className="p-8">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-16 text-center">
+      <div className="p-4 sm:p-6 lg:p-8">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 sm:p-16 text-center">
           <p className="text-gray-600 mb-4">{t.assignmentNotFound}</p>
           <button
             onClick={() => router.push("/create")}
@@ -249,8 +250,8 @@ export function RoadmapView({ assignmentId }: RoadmapViewProps) {
   const maxTaskPoints = Math.max(...roadmap.tasks.map((task) => task.pointsDeposited));
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
+    <div className="p-4 sm:p-6 lg:p-8">
+      <div className="mb-6 sm:mb-8">
         <button
           onClick={() => router.push("/")}
           className="flex items-center space-x-2 text-indigo-600 hover:text-indigo-700 font-semibold mb-4"
@@ -260,14 +261,14 @@ export function RoadmapView({ assignmentId }: RoadmapViewProps) {
         </button>
 
         <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">{roadmap.title}</h1>
-            <p className="text-gray-600 mb-3">{roadmap.subject}</p>
-            <div className="flex items-center space-x-3 text-sm">
+          <div className="min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 break-words">{roadmap.title}</h1>
+            <p className="text-sm sm:text-base text-gray-600 mb-3">{roadmap.subject}</p>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-sm">
               <span className="px-3 py-1 bg-gray-100 rounded-lg font-semibold">
                 {roadmap.difficulty}/5
               </span>
-              <span className="text-gray-500">•</span>
+              <span className="text-gray-500 hidden sm:inline">•</span>
               <div className="flex items-center space-x-2 text-gray-600">
                 <Calendar size={16} />
                 <span>{t.due} {roadmap.finalDeadline.toLocaleDateString()}</span>
@@ -277,8 +278,8 @@ export function RoadmapView({ assignmentId }: RoadmapViewProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200">
           <div className="text-sm text-gray-600 mb-2">{t.overallProgress}</div>
           <div className="text-3xl font-bold text-indigo-600 mb-3">{Math.round(overallProgress)}%</div>
           <div className="w-full bg-gray-200 rounded-full h-2">
@@ -289,7 +290,7 @@ export function RoadmapView({ assignmentId }: RoadmapViewProps) {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+        <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200">
           <div className="text-sm text-gray-600 mb-2">{t.tasksComplete}</div>
           <div className="text-3xl font-bold text-green-600">
             {completedTasks}/{totalTasks}
@@ -297,7 +298,7 @@ export function RoadmapView({ assignmentId }: RoadmapViewProps) {
           <div className="text-xs text-gray-500 mt-1">{totalTasks - completedTasks} {t.remaining}</div>
         </div>
 
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-orange-100">
+        <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-orange-100">
           <div className="flex items-center justify-between mb-2">
             <div className="text-sm text-gray-600">{t.atRisk}</div>
             <TrendingDown className="text-orange-600" size={18} />
@@ -306,7 +307,7 @@ export function RoadmapView({ assignmentId }: RoadmapViewProps) {
           <div className="text-xs text-gray-500 mt-1">{t.activeDeposits}</div>
         </div>
 
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-indigo-100">
+        <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-indigo-100">
           <div className="flex items-center justify-between mb-2">
             <div className="text-sm text-gray-600">{t.totalValue}</div>
             <TrendingUp className="text-indigo-600" size={18} />
@@ -316,10 +317,11 @@ export function RoadmapView({ assignmentId }: RoadmapViewProps) {
         </div>
       </div>
 
-      <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-200 rounded-xl p-6 mb-8">
+      <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-200 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8">
         <h3 className="font-bold text-purple-900 mb-3">{t.pointDistStrategy}</h3>
         <p className="text-sm text-purple-700 mb-4">{t.pointDistDesc}</p>
-        <div className="flex justify-between gap-2 h-32 mb-2" role="img" aria-label={t.pointDistStrategy}>
+        <div className="overflow-x-auto -mx-1 px-1">
+        <div className="flex justify-between gap-1 sm:gap-2 h-24 sm:h-32 mb-2 min-w-[200px]" role="img" aria-label={t.pointDistStrategy}>
           {roadmap.tasks.map((task, i) => (
             <div key={i} className="flex-1 flex flex-col justify-end min-w-0">
               <div
@@ -329,7 +331,7 @@ export function RoadmapView({ assignmentId }: RoadmapViewProps) {
             </div>
           ))}
         </div>
-        <div className="flex justify-between gap-2">
+        <div className="flex justify-between gap-1 sm:gap-2 min-w-[200px]">
           {roadmap.tasks.map((task, i) => (
             <div key={i} className="flex-1 text-center min-w-0">
               <div className="text-xs font-bold text-gray-700">{task.pointsDeposited}</div>
@@ -337,11 +339,12 @@ export function RoadmapView({ assignmentId }: RoadmapViewProps) {
             </div>
           ))}
         </div>
+        </div>
       </div>
 
       {atRiskPoints > 0 && (
-        <div className="bg-gradient-to-r from-red-50 to-orange-50 border-2 border-red-300 rounded-xl p-6 mb-8 flex items-start space-x-4">
-          <AlertTriangle className="text-red-600 flex-shrink-0 mt-1" size={32} />
+        <div className="bg-gradient-to-r from-red-50 to-orange-50 border-2 border-red-300 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 flex items-start space-x-3 sm:space-x-4">
+          <AlertTriangle className="text-red-600 flex-shrink-0 mt-1" size={28} />
           <div>
             <h3 className="text-lg font-bold text-red-900 mb-1">
               ⚠️ {atRiskPoints} {t.pointsCurrentlyAtRisk}
@@ -351,8 +354,8 @@ export function RoadmapView({ assignmentId }: RoadmapViewProps) {
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 lg:p-8">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">
           {t.assignmentTimeline} ({roadmap.tasks.length} {t.milestones})
         </h2>
         <RoadmapTimeline tasks={roadmap.tasks} assignmentId={roadmap.id} />

@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Calendar, BookOpen, Zap, ArrowRight, Wallet } from "lucide-react";
+import { BookOpen, Zap, ArrowRight, Wallet } from "lucide-react";
 import { createAssignment } from "@/lib/api-client";
 import { PointDistributionPreview } from "./PointDistributionPreview";
 import { LectureUpload } from "./LectureUpload";
+import { LoadingSpinner } from "@/components/Loading";
+import { DatePickerField } from "@/components/DatePickerField";
 import { useLanguage } from "@/context/LanguageContext";
 import { formatPoints, useWallet } from "@/context/WalletContext";
 
@@ -55,17 +57,17 @@ export function CreateAssignment() {
   };
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t.createTitle}</h1>
-        <p className="text-gray-600">{t.createSubtitle}</p>
+    <div className="p-4 sm:p-6 lg:p-8">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{t.createTitle}</h1>
+        <p className="text-sm sm:text-base text-gray-600">{t.createSubtitle}</p>
       </div>
 
-      <div className="grid grid-cols-3 gap-8">
-        <div className="col-span-2">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+        <div className="lg:col-span-2">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 lg:p-8">
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     {t.subjectCourse}
@@ -84,19 +86,15 @@ export function CreateAssignment() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label htmlFor="final-deadline" className="block text-sm font-semibold text-gray-700 mb-2">
                     {t.finalDeadline}
                   </label>
-                  <div className="relative">
-                    <Calendar className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                    <input
-                      type="date"
-                      value={formData.finalDeadline}
-                      onChange={(e) => setFormData({ ...formData, finalDeadline: e.target.value })}
-                      className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none"
-                      required
-                    />
-                  </div>
+                  <DatePickerField
+                    id="final-deadline"
+                    value={formData.finalDeadline}
+                    onChange={(finalDeadline) => setFormData({ ...formData, finalDeadline })}
+                    required
+                  />
                 </div>
               </div>
 
@@ -166,7 +164,7 @@ export function CreateAssignment() {
               >
                 {isGenerating ? (
                   <>
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <LoadingSpinner size="sm" className="text-white" />
                     <span>{t.generatingRoadmap}</span>
                   </>
                 ) : (

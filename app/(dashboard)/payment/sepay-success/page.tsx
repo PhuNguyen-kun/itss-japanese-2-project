@@ -7,6 +7,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { syncPaymentOrder } from "@/lib/api-client";
 import { useWallet } from "@/context/WalletContext";
 import { formatVnd } from "@/lib/paymentPlans";
+import { PageLoading } from "@/components/Loading";
 
 function SepaySuccessContent() {
   const { t } = useLanguage();
@@ -120,7 +121,7 @@ function SepaySuccessContent() {
 
 export default function SepaySuccessPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-gray-500">Loading...</div>}>
+    <Suspense fallback={<PageLoading variant="spinner" />}>
       <SepaySuccessContent />
     </Suspense>
   );

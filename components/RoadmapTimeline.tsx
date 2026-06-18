@@ -47,20 +47,20 @@ export function RoadmapTimeline({ tasks, assignmentId }: RoadmapTimelineProps) {
 
   return (
     <div className="relative">
-      <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-indigo-200 via-purple-200 to-pink-200"></div>
+      <div className="absolute left-5 sm:left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-indigo-200 via-purple-200 to-pink-200"></div>
 
-      <div className="space-y-8">
+      <div className="space-y-6 sm:space-y-8">
         {tasks.map((task, index) => {
           const timeInfo = getTimeRemaining(task.deadline);
 
           return (
-            <div key={task.id} className="relative pl-20">
-              <div className="absolute left-4 top-6 transform -translate-x-1/2">
+            <div key={task.id} className="relative pl-14 sm:pl-20">
+              <div className="absolute left-5 sm:left-8 top-6 transform -translate-x-1/2">
                 {getStatusIcon(task.status)}
               </div>
 
               <div
-                className={`bg-white rounded-xl shadow-md border-2 p-6 transition-all ${
+                className={`bg-white rounded-xl shadow-md border-2 p-4 sm:p-6 transition-all ${
                   task.status === "locked"
                     ? "border-gray-200 opacity-60"
                     : task.status === "forfeited"
@@ -73,9 +73,9 @@ export function RoadmapTimeline({ tasks, assignmentId }: RoadmapTimelineProps) {
                 }`}
               >
                 <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <h3 className="text-lg font-bold text-gray-900">{task.title}</h3>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
+                      <h3 className="text-base sm:text-lg font-bold text-gray-900">{task.title}</h3>
                       <span
                         className={`text-xs px-3 py-1 rounded-full font-semibold uppercase ${
                           task.status === "completed"
@@ -96,7 +96,7 @@ export function RoadmapTimeline({ tasks, assignmentId }: RoadmapTimelineProps) {
                       <TaskDescription text={task.description} />
                     </div>
 
-                    <div className="flex items-center space-x-6">
+                    <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3 sm:gap-x-6 sm:gap-y-2">
                       <div className="flex items-center space-x-2">
                         <Clock
                           size={18}
@@ -170,7 +170,7 @@ export function RoadmapTimeline({ tasks, assignmentId }: RoadmapTimelineProps) {
                 )}
               </div>
 
-              <div className="absolute left-4 -top-3 transform -translate-x-1/2 bg-indigo-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">
+              <div className="absolute left-5 sm:left-8 -top-3 transform -translate-x-1/2 bg-indigo-600 text-white w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold">
                 {index + 1}
               </div>
             </div>

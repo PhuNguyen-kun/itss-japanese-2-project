@@ -57,7 +57,7 @@ export function TaskDetail({ taskId }: TaskDetailProps) {
   return (
     <div className="p-4 space-y-6 relative">
       {showConfetti && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
           <div className="bg-white rounded-2xl p-8 text-center space-y-4 max-w-sm mx-4">
             <div className="text-6xl">🎉</div>
             <h2 className="text-2xl font-bold text-gray-900">{t.taskComplete}</h2>
@@ -99,7 +99,7 @@ export function TaskDetail({ taskId }: TaskDetailProps) {
           </div>
         </div>
 
-        <div className="bg-white bg-opacity-20 rounded-lg p-3 mt-3">
+        <div className="bg-white/20 rounded-lg p-3 mt-3 text-white">
           <p className="text-sm">
             💡 {t.completeTaskNote} {task.pointsDeposited} {t.pointsSuffix}!
           </p>

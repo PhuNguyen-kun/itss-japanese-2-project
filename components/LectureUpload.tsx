@@ -35,7 +35,7 @@ export function LectureUpload({ files, onChange }: LectureUploadProps) {
       </label>
       <div
         onClick={() => inputRef.current?.click()}
-        className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-indigo-400 hover:bg-indigo-50/50 transition-colors"
+        className="border-2 border-dashed border-gray-300 rounded-xl p-5 sm:p-8 text-center cursor-pointer hover:border-indigo-400 hover:bg-indigo-50/50 transition-colors"
       >
         <Upload className="mx-auto text-gray-400 mb-3" size={40} />
         <p className="font-semibold text-gray-700">{t.lectureUploadHint}</p>

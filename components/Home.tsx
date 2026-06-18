@@ -8,17 +8,26 @@ import { useState, useEffect } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 import { formatPoints, useWallet } from "@/context/WalletContext";
 import { formatTimeRemaining } from "@/lib/timeFormat";
+import { PageLoading } from "@/components/Loading";
 import type { Assignment } from "@/lib/types";
 
 export function Home() {
   const { t } = useLanguage();
   const router = useRouter();
   const [assignments, setAssignments] = useState<Assignment[]>([]);
+  const [loading, setLoading] = useState(true);
   const { stats } = useWallet();
 
   useEffect(() => {
-    getAssignments().then(setAssignments).catch(console.error);
+    getAssignments()
+      .then(setAssignments)
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, []);
+
+  if (loading) {
+    return <PageLoading variant="dashboard" />;
+  }
 
   const allTasks = assignments.flatMap(assignment =>
     assignment.tasks
@@ -59,14 +68,14 @@ export function Home() {
   };
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t.dashboardTitle}</h1>
-        <p className="text-gray-600">{t.dashboardSubtitle}</p>
+    <div className="p-4 sm:p-6 lg:p-8">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{t.dashboardTitle}</h1>
+        <p className="text-sm sm:text-base text-gray-600">{t.dashboardSubtitle}</p>
       </div>
 
-      <div className="grid grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-xl p-6 shadow-sm border-2 border-indigo-100">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border-2 border-indigo-100">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-semibold text-gray-600">{t.totalPoints}</span>
             <Zap className="text-indigo-600" size={20} />
@@ -77,7 +86,7 @@ export function Home() {
           <div className="text-xs text-gray-500 mt-1">{t.availableBalance}</div>
         </div>
 
-        <div className="bg-white rounded-xl p-6 shadow-sm border-2 border-orange-100">
+        <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border-2 border-orange-100">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-semibold text-gray-600">{t.atRisk}</span>
             <TrendingDown className="text-orange-600" size={20} />
@@ -86,7 +95,7 @@ export function Home() {
           <div className="text-xs text-gray-500 mt-1">{t.activeDeposits}</div>
         </div>
 
-        <div className="bg-white rounded-xl p-6 shadow-sm border-2 border-red-100">
+        <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border-2 border-red-100">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-semibold text-gray-600">{t.lostForever}</span>
             <AlertCircle className="text-red-600" size={20} />
@@ -95,7 +104,7 @@ export function Home() {
           <div className="text-xs text-gray-500 mt-1">{t.missedDeadlines}</div>
         </div>
 
-        <div className="bg-white rounded-xl p-6 shadow-sm border-2 border-green-100">
+        <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border-2 border-green-100">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-semibold text-gray-600">{t.completedToday}</span>
             <CheckCircle2 className="text-green-600" size={20} />
@@ -105,13 +114,13 @@ export function Home() {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-6">
-        <div className="col-span-2">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="lg:col-span-2">
           {pointsAtRisk > 0 && (
-            <div className="bg-gradient-to-r from-red-50 to-orange-50 border-2 border-red-200 rounded-xl p-5 mb-6 flex items-start space-x-4">
-              <AlertCircle className="text-red-600 flex-shrink-0 mt-1" size={28} />
+            <div className="bg-gradient-to-r from-red-50 to-orange-50 border-2 border-red-200 rounded-xl p-4 sm:p-5 mb-4 sm:mb-6 flex items-start space-x-3 sm:space-x-4">
+              <AlertCircle className="text-red-600 flex-shrink-0 mt-1" size={24} />
               <div>
-                <p className="text-lg font-bold text-red-900">
+                <p className="text-base sm:text-lg font-bold text-red-900">
                   ⚠️ {pointsAtRisk} {t.pointsAtRiskAlert}
                 </p>
                 <p className="text-sm text-red-700 mt-1">{t.completeTasksAlert}</p>
@@ -120,19 +129,19 @@ export function Home() {
           )}
 
           <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-gray-900">{t.activeTasks}</h2>
+            <div className="p-4 sm:p-6 border-b border-gray-200">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900">{t.activeTasks}</h2>
                 <Link
                   href="/create"
-                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-semibold"
+                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-semibold text-center"
                 >
                   {t.newAssignment}
                 </Link>
               </div>
             </div>
 
-            <div className="overflow-x-auto">
+            <div>
               {allTasks.length === 0 ? (
                 <div className="text-center py-16">
                   <div className="text-6xl mb-4">📝</div>
@@ -145,62 +154,107 @@ export function Home() {
                   </Link>
                 </div>
               ) : (
-                <table className="w-full">
-                  <thead className="bg-gray-50 border-b border-gray-200">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">{t.tableTask}</th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">{t.tableSubject}</th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">{t.tableDeadline}</th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">{t.tablePointsAtRisk}</th>
-                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">{t.tableStatus}</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200">
+                <>
+                  <div className="md:hidden divide-y divide-gray-200">
                     {allTasks.slice(0, 6).map((task) => {
                       const urgency = getUrgencyLevel(task.deadline);
                       return (
-                        <tr
+                        <button
                           key={`${task.assignmentId}-${task.id}`}
-                          className="hover:bg-gray-50 cursor-pointer transition-colors"
+                          type="button"
+                          className="w-full text-left p-4 hover:bg-gray-50 transition-colors"
                           onClick={() => router.push(`/roadmap/${task.assignmentId}`)}
                         >
-                          <td className="px-6 py-4">
-                            <div className="flex items-center space-x-2">
-                              <span className={`w-2 h-2 rounded-full ${getUrgencyColor(urgency)}`}></span>
-                              <span className="font-semibold text-gray-900">{task.title}</span>
+                          <div className="flex items-start justify-between gap-2 mb-2">
+                            <div className="flex items-center space-x-2 min-w-0">
+                              <span className={`w-2 h-2 rounded-full flex-shrink-0 ${getUrgencyColor(urgency)}`} />
+                              <span className="font-semibold text-gray-900 truncate">{task.title}</span>
                             </div>
-                          </td>
-                          <td className="px-6 py-4 text-sm text-gray-600">{task.subject}</td>
-                          <td className="px-6 py-4">
-                            <div className="flex items-center space-x-2">
-                              <Clock size={14} className={urgency === "high" ? "text-red-600" : "text-gray-400"} />
-                              <span className={`text-sm font-semibold ${
-                                urgency === "high" ? "text-red-600" : "text-gray-700"
-                              }`}>
-                                {getTimeRemaining(task.deadline)}
-                              </span>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="flex items-center space-x-1 text-orange-600">
-                              <TrendingDown size={16} />
-                              <span className="font-bold">{task.pointsDeposited}</span>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className={`text-xs px-3 py-1 rounded-full font-semibold ${
+                            <span className={`text-xs px-2 py-0.5 rounded-full font-semibold flex-shrink-0 ${
                               task.status === "active"
                                 ? "bg-orange-100 text-orange-700"
                                 : "bg-blue-100 text-blue-700"
                             }`}>
                               {task.status === "active" ? t.timelineActive : t.timelineUpcoming}
                             </span>
-                          </td>
-                        </tr>
+                          </div>
+                          <p className="text-sm text-gray-600 mb-2 truncate">{task.subject}</p>
+                          <div className="flex items-center justify-between text-sm">
+                            <div className="flex items-center space-x-1.5">
+                              <Clock size={14} className={urgency === "high" ? "text-red-600" : "text-gray-400"} />
+                              <span className={`font-semibold ${urgency === "high" ? "text-red-600" : "text-gray-700"}`}>
+                                {getTimeRemaining(task.deadline)}
+                              </span>
+                            </div>
+                            <div className="flex items-center space-x-1 text-orange-600 font-bold">
+                              <TrendingDown size={14} />
+                              <span>{task.pointsDeposited}</span>
+                            </div>
+                          </div>
+                        </button>
                       );
                     })}
-                  </tbody>
-                </table>
+                  </div>
+
+                  <div className="hidden md:block overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gray-50 border-b border-gray-200">
+                        <tr>
+                          <th className="px-4 lg:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">{t.tableTask}</th>
+                          <th className="px-4 lg:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">{t.tableSubject}</th>
+                          <th className="px-4 lg:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">{t.tableDeadline}</th>
+                          <th className="px-4 lg:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">{t.tablePointsAtRisk}</th>
+                          <th className="px-4 lg:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">{t.tableStatus}</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200">
+                        {allTasks.slice(0, 6).map((task) => {
+                          const urgency = getUrgencyLevel(task.deadline);
+                          return (
+                            <tr
+                              key={`${task.assignmentId}-${task.id}`}
+                              className="hover:bg-gray-50 cursor-pointer transition-colors"
+                              onClick={() => router.push(`/roadmap/${task.assignmentId}`)}
+                            >
+                              <td className="px-4 lg:px-6 py-4">
+                                <div className="flex items-center space-x-2">
+                                  <span className={`w-2 h-2 rounded-full ${getUrgencyColor(urgency)}`}></span>
+                                  <span className="font-semibold text-gray-900">{task.title}</span>
+                                </div>
+                              </td>
+                              <td className="px-4 lg:px-6 py-4 text-sm text-gray-600">{task.subject}</td>
+                              <td className="px-4 lg:px-6 py-4">
+                                <div className="flex items-center space-x-2">
+                                  <Clock size={14} className={urgency === "high" ? "text-red-600" : "text-gray-400"} />
+                                  <span className={`text-sm font-semibold ${
+                                    urgency === "high" ? "text-red-600" : "text-gray-700"
+                                  }`}>
+                                    {getTimeRemaining(task.deadline)}
+                                  </span>
+                                </div>
+                              </td>
+                              <td className="px-4 lg:px-6 py-4">
+                                <div className="flex items-center space-x-1 text-orange-600">
+                                  <TrendingDown size={16} />
+                                  <span className="font-bold">{task.pointsDeposited}</span>
+                                </div>
+                              </td>
+                              <td className="px-4 lg:px-6 py-4">
+                                <span className={`text-xs px-3 py-1 rounded-full font-semibold ${
+                                  task.status === "active"
+                                    ? "bg-orange-100 text-orange-700"
+                                    : "bg-blue-100 text-blue-700"
+                                }`}>
+                                  {task.status === "active" ? t.timelineActive : t.timelineUpcoming}
+                                </span>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
               )}
             </div>
           </div>

@@ -2,16 +2,18 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, GitBranch, Wallet, Plus, Target, ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { LayoutDashboard, GitBranch, Wallet, Plus, Target, ChevronDown, Menu, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 import { formatPoints, useWallet } from "@/context/WalletContext";
+import { Skeleton } from "@/components/Loading";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { language, setLanguage, t } = useLanguage();
   const [langOpen, setLangOpen] = useState(false);
-  const { stats } = useWallet();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { stats, loading: walletLoading } = useWallet();
 
   const navItems = [
     { path: "/", icon: LayoutDashboard, label: t.navDashboard },
@@ -20,10 +22,34 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     { path: "/deposit", icon: Wallet, label: t.navPoints },
   ];
 
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!sidebarOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [sidebarOpen]);
+
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <header className="fixed top-0 left-64 right-0 z-40 h-14 bg-white border-b border-gray-200 flex items-center justify-end px-6 shadow-sm">
-        <div className="flex items-center space-x-4">
+      <header className="fixed top-0 left-0 lg:left-64 right-0 z-40 h-14 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-6 shadow-sm">
+        <button
+          type="button"
+          onClick={() => setSidebarOpen(true)}
+          className="lg:hidden p-2 -ml-1 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+          aria-label="Open menu"
+        >
+          <Menu size={22} />
+        </button>
+
+        <div className="hidden lg:block flex-1" />
+
+        <div className="flex items-center space-x-3 sm:space-x-4">
           <div className="relative">
             <button
               onClick={() => setLangOpen(!langOpen)}
@@ -72,20 +98,42 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
-      <aside className="w-64 bg-gradient-to-b from-indigo-900 to-indigo-800 text-white flex flex-col fixed top-0 h-screen">
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden
+        />
+      )}
+
+      <aside
+        className={`w-64 bg-gradient-to-b from-indigo-900 to-indigo-800 text-white flex flex-col fixed top-0 h-screen z-50 transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
         <div className="p-5 border-b border-indigo-700">
-          <div className="flex items-center space-x-3">
-            <div className="w-9 h-9 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg flex items-center justify-center">
-              <Target size={20} className="text-white" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3 min-w-0">
+              <div className="w-9 h-9 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Target size={20} className="text-white" />
+              </div>
+              <div className="min-w-0">
+                <h1 className="text-lg font-bold truncate">{t.appName}</h1>
+                <p className="text-xs text-indigo-300 truncate">{t.appTagline}</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-lg font-bold">{t.appName}</h1>
-              <p className="text-xs text-indigo-300">{t.appTagline}</p>
-            </div>
+            <button
+              type="button"
+              onClick={() => setSidebarOpen(false)}
+              className="lg:hidden p-1.5 rounded-lg text-indigo-200 hover:bg-indigo-800 transition-colors flex-shrink-0"
+              aria-label="Close menu"
+            >
+              <X size={20} />
+            </button>
           </div>
         </div>
 
-        <nav className="flex-1 p-4 space-y-1.5">
+        <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto">
           {navItems.map(({ path, icon: Icon, label }) => {
             const isActive =
               pathname === path ||
@@ -95,6 +143,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               <Link
                 key={path}
                 href={path}
+                onClick={() => setSidebarOpen(false)}
                 className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
                   isActive
                     ? "bg-indigo-700 text-white"
@@ -114,13 +163,17 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               <span className="text-sm text-indigo-300">{t.sidebarTotalPoints}</span>
               <Wallet size={16} className="text-yellow-400" />
             </div>
-            <div className="text-2xl font-bold">{formatPoints(stats?.totalBalance, !stats)}</div>
+            {walletLoading ? (
+              <Skeleton className="h-8 w-20" />
+            ) : (
+              <div className="text-2xl font-bold">{formatPoints(stats?.totalBalance, !stats)}</div>
+            )}
             <div className="text-xs text-indigo-300 mt-1">{t.sidebarKeepEarning}</div>
           </div>
         </div>
       </aside>
 
-      <main className="flex-1 ml-64 mt-14">
+      <main className="flex-1 w-full min-w-0 ml-0 lg:ml-64 mt-14">
         {children}
       </main>
 

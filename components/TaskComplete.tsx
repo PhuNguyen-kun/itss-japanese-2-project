@@ -28,6 +28,7 @@ import { useWallet } from "@/context/WalletContext";
 import { formatTimeRemaining } from "@/lib/timeFormat";
 import { TaskDescription } from "./TaskDescription";
 import { MathText } from "./MathText";
+import { PageLoading, LoadingSpinner } from "@/components/Loading";
 import type { Assignment, Milestone } from "@/lib/types";
 
 interface TaskCompleteProps {
@@ -103,7 +104,7 @@ export function TaskComplete({ assignmentId, taskId }: TaskCompleteProps) {
   };
 
   if (!task || !assignment) {
-    return <div className="p-8 text-gray-500 max-w-4xl mx-auto w-full">Loading...</div>;
+    return <PageLoading variant="form" />;
   }
 
   const isCompleted = task.status === "completed" || !!progress?.completedAt;
@@ -152,9 +153,9 @@ export function TaskComplete({ assignmentId, taskId }: TaskCompleteProps) {
   };
 
   return (
-    <div className="p-8 space-y-6 relative max-w-4xl mx-auto w-full">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 relative max-w-4xl mx-auto w-full">
       {showSuccess && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
           <div className="bg-white rounded-2xl p-8 text-center space-y-4 max-w-sm mx-4">
             <div className="text-6xl">🎉</div>
             <h2 className="text-2xl font-bold text-gray-900">{t.taskComplete}</h2>
@@ -174,23 +175,23 @@ export function TaskComplete({ assignmentId, taskId }: TaskCompleteProps) {
         >
           {t.back}
         </button>
-        <h1 className="text-2xl font-bold text-gray-900">{task.title}</h1>
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{task.title}</h1>
         <p className="text-gray-600 mt-1">{assignment.subject}</p>
       </div>
 
-      <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-xl p-5 shadow-lg">
-        <div className="flex items-center justify-between">
+      <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-xl p-4 sm:p-5 shadow-lg">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center space-x-2">
-            <Clock size={24} />
+            <Clock size={22} className="flex-shrink-0" />
             <div>
               <p className="text-sm opacity-90">{t.deadline}</p>
               <p className="font-bold">{timeInfo.text}</p>
             </div>
           </div>
-          <div className="text-right">
-            <div className="flex items-center justify-end space-x-2">
-              <TrendingDown size={24} />
-              <span className="text-3xl font-bold">{task.pointsDeposited}</span>
+          <div className="sm:text-right">
+            <div className="flex items-center sm:justify-end space-x-2">
+              <TrendingDown size={22} className="flex-shrink-0" />
+              <span className="text-2xl sm:text-3xl font-bold">{task.pointsDeposited}</span>
             </div>
             <p className="text-sm opacity-90">{t.pointsAtRiskLabel}</p>
           </div>
@@ -210,8 +211,15 @@ export function TaskComplete({ assignmentId, taskId }: TaskCompleteProps) {
         {!isCompleted && (
           <label className="flex flex-col items-center border-2 border-dashed border-gray-300 rounded-xl p-6 cursor-pointer hover:border-indigo-400">
             <Upload className="text-gray-400 mb-2" size={32} />
-            <span className="text-sm font-semibold text-gray-700">
-              {uploadingNotes ? t.uploading : t.uploadNotesBtn}
+            <span className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+              {uploadingNotes ? (
+                <>
+                  <LoadingSpinner size="sm" />
+                  {t.uploading}
+                </>
+              ) : (
+                t.uploadNotesBtn
+              )}
             </span>
             <input
               type="file"
@@ -229,10 +237,10 @@ export function TaskComplete({ assignmentId, taskId }: TaskCompleteProps) {
         {(progress?.notes.length ?? 0) > 0 && (
           <div className="mt-3 space-y-2">
             {progress!.notes.map((n, i) => (
-              <div key={i} className="flex items-center justify-between text-sm text-gray-700 bg-gray-50 p-2 rounded-lg">
-                <div className="flex items-center space-x-2">
-                  <FileText size={16} className="text-indigo-600" />
-                  <span>{n.originalName}</span>
+              <div key={i} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 text-sm text-gray-700 bg-gray-50 p-2 rounded-lg">
+                <div className="flex items-center space-x-2 min-w-0">
+                  <FileText size={16} className="text-indigo-600 flex-shrink-0" />
+                  <span className="truncate">{n.originalName}</span>
                 </div>
                 <span className="text-xs text-gray-400">
                   {new Date(n.uploadedAt).toLocaleDateString()}
@@ -252,8 +260,9 @@ export function TaskComplete({ assignmentId, taskId }: TaskCompleteProps) {
           <button
             onClick={() => handleStartQuiz(false)}
             disabled={!canTakeQuiz || loadingQuiz}
-            className="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold disabled:opacity-50"
+            className="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold disabled:opacity-50 flex items-center justify-center gap-2"
           >
+            {loadingQuiz && <LoadingSpinner size="sm" className="text-white" />}
             {loadingQuiz ? t.generatingQuiz : t.startQuiz}
           </button>
         ) : (
@@ -262,8 +271,9 @@ export function TaskComplete({ assignmentId, taskId }: TaskCompleteProps) {
               <button
                 onClick={() => handleStartQuiz(true)}
                 disabled={loadingQuiz}
-                className="text-sm text-indigo-600 hover:underline"
+                className="text-sm text-indigo-600 hover:underline inline-flex items-center gap-1.5 disabled:opacity-50"
               >
+                {loadingQuiz && <LoadingSpinner size="sm" />}
                 {t.regenerateQuiz}
               </button>
             )}
@@ -356,13 +366,17 @@ export function TaskComplete({ assignmentId, taskId }: TaskCompleteProps) {
             <button
               onClick={handleComplete}
               disabled={submitting}
-              className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-4 rounded-xl font-bold text-lg flex items-center justify-center space-x-2 hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg disabled:opacity-50"
+              className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg flex items-center justify-center gap-2 hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg disabled:opacity-50"
             >
-              <CheckCircle2 size={24} />
+              {submitting ? (
+                <LoadingSpinner size="sm" className="text-white" />
+              ) : (
+                <CheckCircle2 size={24} />
+              )}
               <span>
                 {t.completeTaskBtn} {task.pointsDeposited} {t.pointsSuffix}
               </span>
-              <Sparkles size={20} />
+              {!submitting && <Sparkles size={20} />}
             </button>
           )}
         </>
